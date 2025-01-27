@@ -12,8 +12,20 @@ export default {
 
     theme: {
         extend: {
+            backgroundImage: {
+                'login-pattern': "url('/background.webp')",
+            },
+            colors: {
+                pandanwangi: '#8EB69B',
+                bunulrejo: '#DAF1DD',
+                lowokwaru: '#3E5245',
+                blimbing: '#153832',
+
+            },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sonsie: ['"Sonsie One"', 'cursive'],
+                satoshi: ['"Satoshi"', 'sans-serif'],
             },
         },
     },
