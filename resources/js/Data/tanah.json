@@ -1,0 +1,50 @@
+[
+    {
+        "image": "/assets/tanah1.jpg",
+        "status": "Dijual",
+        "price": "200000000",
+        "place": "Blimbing, Kota Malang",
+        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
+        "id": "1"
+    },
+    {
+        "image": "/assets/tanah2.jpg",
+        "status": "Disewa",
+        "price": "200000000",
+        "place": "Blimbing, Kota Malang",
+        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
+        "id": "2"
+    },
+    {
+        "image": "/assets/tanah1.jpg",
+        "status": "Dijual",
+        "price": "200000000",
+        "place": "Blimbing, Kota Malang",
+        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
+        "id": "3"
+    },
+    {
+        "image": "/assets/tanah2.jpg",
+        "status": "Dijual",
+        "price": "200000000",
+        "place": "Blimbing, Kota Malang",
+        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
+        "id": "4"
+    },
+    {
+        "image": "/assets/tanah1.jpg",
+        "status": "Dijual",
+        "price": "200000000",
+        "place": "Blimbing, Kota Malang",
+        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
+        "id": "5"
+    },
+    {
+        "image": "/assets/tanah2.jpg",
+        "status": "Dijual",
+        "price": "200000000",
+        "place": "Blimbing, Kota Malang",
+        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
+        "id": "6"
+    }
+]

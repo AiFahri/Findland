@@ -1,9 +1,10 @@
 import FaqSection from "@/Components/Faq/FaqSection";
-
+import Navbar from "@/Components/Navbar";
 const Faq = () => {
     return (
         <>
             <div>
+                <Navbar />
                 <div className="text-md font-extrabold text-bunulrejo border w-16 px-2 py-0  bg-[#7FB290] rounded-md">
                     FAQ's
                 </div>

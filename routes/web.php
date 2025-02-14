@@ -6,19 +6,28 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Home', [
+    return Inertia::render('AboutUs', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
 });
-Route::get('/home', function () {
-    return Inertia::render('Home');
+Route::get('/tentangkami', function () {
+    return Inertia::render('AboutUs');
 });
-Route::get('/product', function () {
-    return Inertia::render('Product');
-});
+Route::get('/layanan/beli', function () {
+    return Inertia::render('Layanan/Beli');
+})->name('layanan.beli');
+
+Route::get('/layanan/jual', function () {
+    return Inertia::render('Layanan/Jual');
+})->name('layanan.jual');
+
+Route::get('/layanan/sewa', function () {
+    return Inertia::render('Layanan/Sewa');
+})->name('layanan.sewa');
+
 Route::get('/faq', function () {
     return Inertia::render('Faq');
 });

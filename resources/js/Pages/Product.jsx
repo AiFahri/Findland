@@ -1,69 +1,11 @@
 import Card from "../Components/Card";
-import tanah1 from "../../assets/tanah1.jpg";
-import tanah2 from "../../assets/tanah2.jpg";
 import Footer from "../Components/Footer";
 import { useState } from "react";
+import datatanah from "../Data/tanah.json";
 
-const data = [
-    {
-        image: tanah1,
-        status: "Dijual",
-        price: "200000000",
-        place: "Blimbing, Kota Malang",
-        description:
-            "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        id: 1,
-    },
-    {
-        image: tanah1,
-        status: "Disewa",
-        price: "200000000",
-        place: "Blimbing, Kota Malang",
-        description:
-            "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        id: 2,
-    },
-    {
-        image: tanah1,
-        status: "Dijual",
-        price: "200000000",
-        place: "Blimbing, Kota Malang",
-        description:
-            "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        id: 3,
-    },
-    {
-        image: tanah1,
-        status: "Dijual",
-        price: "200000000",
-        place: "Blimbing, Kota Malang",
-        description:
-            "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        id: 4,
-    },
-    {
-        image: tanah1,
-        status: "Dijual",
-        price: "200000000",
-        place: "Blimbing, Kota Malang",
-        description:
-            "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        id: 5,
-    },
-    {
-        image: tanah1,
-        status: "Dijual",
-        price: "200000000",
-        place: "Blimbing, Kota Malang",
-        description:
-            "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        id: 6,
-    },
-];
-
-const Product = () => {
+const Product = ({ data, title }) => {
     const [currentImage, setCurrentImage] = useState(0);
-    const images = [tanah1, tanah2, tanah1];
+    const images = [datatanah.image, datatanah.image, datatanah.image];
 
     const handlePrev = () => {
         setCurrentImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -168,7 +110,7 @@ const Product = () => {
             </h1>
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5 mb-12 px-4">
                 {" "}
-                {data.map((item) => (
+                {datatanah.map((item) => (
                     <Card
                         key={item.id}
                         image={item.image}
