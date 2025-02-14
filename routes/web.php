@@ -4,6 +4,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\ReviewController;
+
+
 
 Route::get('/', function () {
     return Inertia::render('AboutUs', [
@@ -13,6 +16,11 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+Route::get('/beranda', function () {
+    return Inertia::render('Home', [
+        'reviews' => \App\Models\Review::with('user')->latest()->get()
+    ]);
+})->name('home');
 Route::get('/tentangkami', function () {
     return Inertia::render('AboutUs');
 });
@@ -40,6 +48,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/profile/update-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.update.picture');
 });
+
 
 require __DIR__.'/auth.php';

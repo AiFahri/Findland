@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'address',
         'password',
+        'profile_picture',
     ];
 
     /**
@@ -57,4 +58,10 @@ class User extends Authenticatable
     {
         return "{$this->first_name} {$this->last_name}";
     }
+    public function getProfilePictureUrlAttribute()
+{
+    return $this->profile_picture
+        ? asset('storage/' . $this->profile_picture)
+        : 'https://i.pravatar.cc/150?u=' . $this->id; // Default avatar dari pravatar
+}
 }
