@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react";
-import landingpage from "../../../public/assets/landingpage.jpg";
+import landingpage from "../../../public/assets/landingpage3.jpg";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/Footer";
 
@@ -11,12 +11,10 @@ const AboutUs = ({ reviews }) => {
         <>
             <div className="px-12 py-8">
                 <Navbar />
-                {/* Hero Section */}
                 <section className="relative mt-8">
                     <div className="bg-white border  rounded-3xl p-10 md:p-12 max-w-7xl mx-auto relative">
                         <div className="grid md:grid-cols-2 gap-12 items-center">
-                            {/* Kiri Atas */}
-                            <div className="space-y-6">
+                            <div className="space-y-6 mr-36">
                                 <h2 className="text-xl md:text-2xl font-semibold italic text-pandanwangi">
                                     <span className="font-sonsie font-bold">
                                         Findland
@@ -49,8 +47,7 @@ const AboutUs = ({ reviews }) => {
                                     </div>
                                 </div>
                             </div>
-                            {/* Kanan */}
-                            <div className="relative">
+                            <div className="relative -ml-36">
                                 <h1 className="text-3xl md:text-5xl font-bold text-pandanwangi">
                                     We provide the <br />
                                     land for future Property.
@@ -59,7 +56,7 @@ const AboutUs = ({ reviews }) => {
                                     <img
                                         src={landingpage}
                                         alt="Future Property"
-                                        className="rounded-xl shadow-lg w-full"
+                                        className="rounded-3xl shadow-lg w-full"
                                     />
                                 </div>
                             </div>

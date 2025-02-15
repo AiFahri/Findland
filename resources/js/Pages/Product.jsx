@@ -1,128 +1,135 @@
+import React, { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import Card from "../Components/Card";
-import Footer from "../Components/Footer";
-import { useState } from "react";
-import datatanah from "../Data/tanah.json";
+import logomap from "../../assets/map.svg";
+import logowa from "../../assets/wa.svg";
 
-const Product = ({ data, title }) => {
-    const [currentImage, setCurrentImage] = useState(0);
-    const images = [datatanah.image, datatanah.image, datatanah.image];
+const formatPrice = (price) => {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
 
-    const handlePrev = () => {
-        setCurrentImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+const Product = ({ data }) => {
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    useEffect(() => {
+        setSelectedProduct(null);
+        setCurrentImageIndex(0);
+    }, [data]);
+
+    const handleProductSelect = (product) => {
+        setSelectedProduct(product);
+        setCurrentImageIndex(0);
     };
 
-    const handleNext = () => {
-        setCurrentImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    };
     return (
-        <div className="p-8">
-            {/* Title */}
-            <div className=" p-6 rounded-3xl shadow-lg mx-auto flex flex-col md:flex-row items-center md:items-start gap-6">
-                {/* Image Section */}
-                <div className="relative w-full md:w-1/2 h-64 md:h-auto rounded-xl overflow-hidden">
-                    <img
-                        src={images[currentImage]}
-                        alt={`Property View ${currentImage + 1}`}
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 flex justify-between p-4">
-                        <button
-                            onClick={handlePrev}
-                            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition"
+        <div className="">
+            {selectedProduct && (
+                <section className="rounded-3xl shadow-lg mx-auto flex flex-col md:flex-row items-center md:items-start p-6 md:p-0">
+                    <div className="relative w-full md:w-3/5 aspect-video rounded-xl overflow-hidden">
+                        <Swiper
+                            modules={[Navigation, Pagination]}
+                            spaceBetween={10}
+                            slidesPerView={1.25}
+                            centeredSlides={false}
+                            navigation={false}
+                            pagination={{
+                                clickable: true,
+                            }}
+                            onSlideChange={(swiper) =>
+                                setCurrentImageIndex(swiper.activeIndex)
+                            }
+                            className="w-full h-full"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6 text-gray-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
+                            {selectedProduct.images.map((image, index) => (
+                                <SwiperSlide
+                                    key={index}
+                                    className={`
+                                        ${
+                                            index === currentImageIndex
+                                                ? "opacity-100"
+                                                : "opacity-50"
+                                        }
+                                        transition-opacity duration-300 ease-in-out
+                                    `}
+                                >
+                                    <img
+                                        src={image}
+                                        alt={`Property View ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    </div>
+                    <div className="w-full md:w-2/5 md:pl-6">
+                        <h2 className="text-sm text-[#235347] font-thin">
+                            {selectedProduct.place}
+                        </h2>
+                        <p className="text-3xl font-bold text-[#235347]">
+                            Rp {formatPrice(selectedProduct.price)}
+                        </p>
+                        <span className="flex items-center justify-center text-sm border w-20 bg-lowokwaru text-white rounded-md ">
+                            {selectedProduct.status}
+                        </span>
+                        <p className="text-sm text-gray-600 whitespace-pre-line mt-4">
+                            {selectedProduct.desc_detail}
+                        </p>
+                        <div className="flex items-center gap-4 mt-8">
+                            <a
+                                href={selectedProduct.maps}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center bg-pandanwangi text-bunulrejo px-4 py-2 rounded-lg hover:bg-green-700 transition"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M15 19l-7-7 7-7"
+                                <img
+                                    src={logomap}
+                                    alt="Lihat Peta"
+                                    className="w-6 h-6 mr-2"
                                 />
-                            </svg>
-                        </button>
-                        <button
-                            onClick={handleNext}
-                            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6 text-gray-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
+                                Lihat Peta
+                            </a>
+                            <a
+                                href={selectedProduct.wa}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center bg-pandanwangi border border-pandanwangi text-bunulrejo px-4 py-2 rounded-lg hover:bg-green-700 transition"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M9 5l7 7-7 7"
+                                <img
+                                    src={logowa}
+                                    alt="WhatsApp"
+                                    className="w-6 h-6 mr-2"
                                 />
-                            </svg>
-                        </button>
+                                WhatsApp
+                            </a>
+                        </div>
                     </div>
-                </div>
+                </section>
+            )}
 
-                {/* Information Section */}
-                <div className="w-full md:w-1/2 flex flex-col gap-4">
-                    <h2 className="text-lg font-medium text-gray-700">
-                        Blimbing, Kota Malang
-                    </h2>
-                    <h3 className="text-2xl font-bold text-green-600">
-                        Rp 200.000.000
-                    </h3>
-                    <span className="bg-green-600 text-white text-sm font-medium px-4 py-1 rounded-full w-fit">
-                        Dijual
-                    </span>
-
-                    <p className="text-gray-600 leading-relaxed">
-                        Lokasi yang strategis tentu saja harus memiliki akses
-                        jalan yang lebar. Tanah ini memiliki akses jalan lebar
-                        hingga 7 meter.
-                    </p>
-
-                    <div className="text-gray-600">
-                        <p>Info sekitar lokasi:</p>
-                        <ul className="list-disc list-inside">
-                            <li>5 Menit Kampus Polinema</li>
-                            <li>10 Menit Kampus Universitas Brawijaya</li>
-                            <li>15 Menit Kampus Universitas Malang</li>
-                        </ul>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 mb-8">
+                {data.map((product, index) => (
+                    <div
+                        key={index}
+                        onClick={() => handleProductSelect(product)}
+                        className="cursor-pointer hover:scale-105 transition-transform"
+                    >
+                        <Card
+                            image={product.image}
+                            status={product.status}
+                            price={formatPrice(product.price)}
+                            description={product.description}
+                            place={product.place}
+                        />
                     </div>
-
-                    <div className="flex gap-4 mt-4">
-                        <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
-                            Lihat Peta
-                        </button>
-                        <button className="bg-white border border-green-600 text-green-600 px-6 py-2 rounded-lg hover:bg-green-100 transition">
-                            WhatsApp
-                        </button>
-                    </div>
-                </div>
-            </div>
-            {/* Cards */}
-            <h1 className="text-4xl font-extrabold text-[#3E5245] ">
-                Properti Lainnya
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5 mb-12 px-4">
-                {" "}
-                {datatanah.map((item) => (
-                    <Card
-                        key={item.id}
-                        image={item.image}
-                        status={item.status}
-                        price={item.price}
-                        place={item.place}
-                        description={item.description}
-                    />
                 ))}
             </div>
-            <Footer />
         </div>
     );
 };
+
 export default Product;

@@ -2,7 +2,11 @@ import logoyt from "../../assets/yt.svg";
 import logoig from "../../assets/ig.svg";
 import logophone from "../../assets/phone.svg";
 import logoemail from "../../assets/gmail.svg";
-import logofindland from "../../assets/findland.svg";
+import logofindland from "../../../public/assets/findland.svg";
+import dropdown from "../../assets/dropdown.svg";
+import { useState, useRef } from "react";
+import { Link } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 
 const socialLinks = [
     { href: "tel:+62123456789", img: logophone, alt: "Phone" },
@@ -20,10 +24,18 @@ const socialLinks = [
 ];
 
 const navLinks = [
-    { href: "#beranda", label: "Beranda" },
-    { href: "#tentang", label: "Tentang Kami" },
-    { href: "#layanan", label: "Layanan" },
-    { href: "#faq", label: "FAQ" },
+    { href: "/", label: "Beranda" },
+    { href: "/tentangkami", label: "Tentang Kami" },
+    {
+        href: "/layanan",
+        label: "Layanan",
+        dropdown: [
+            { href: "/layanan/jual", label: "Jual Lahan" },
+            { href: "/layanan/beli", label: "Beli Lahan" },
+            { href: "/layanan/sewa", label: "Sewa Lahan" },
+        ],
+    },
+    { href: "/faq", label: "FAQ" },
 ];
 
 const SocialLink = ({ href, img, alt }) => (
@@ -38,6 +50,23 @@ const SocialLink = ({ href, img, alt }) => (
 );
 
 const Footer = () => {
+    const { url } = usePage();
+    const [isLayananOpen, setIsLayananOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    const handleClickOutside = (event) => {
+        if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(event.target)
+        ) {
+            setIsLayananOpen(false);
+        }
+    };
+
+    const handleToggle = () => {
+        setIsLayananOpen((prev) => !prev);
+    };
     return (
         <footer className="bg-[#0E372E] text-bunulrejo p-8 rounded-3xl">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-12">
@@ -74,13 +103,53 @@ const Footer = () => {
                 </div>
                 <nav className="flex gap-6 mt-4 md:mt-0">
                     {navLinks.map((nav, index) => (
-                        <a
+                        <div
                             key={index}
-                            href={nav.href}
-                            className="text-white hover:text-gray-300"
+                            className="relative group p-4 md:p-4"
+                            ref={dropdownRef}
                         >
-                            {nav.label}
-                        </a>
+                            {nav.dropdown ? (
+                                <button
+                                    onClick={handleToggle}
+                                    className="flex items-center text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 cursor-pointer"
+                                >
+                                    {nav.label}{" "}
+                                    <img
+                                        src={dropdown}
+                                        alt="Dropdown"
+                                        className="w-4 h-4 ml-1"
+                                    />
+                                </button>
+                            ) : (
+                                <Link
+                                    href={nav.href}
+                                    className={`text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 ${
+                                        url === nav.href
+                                            ? "text-bunulrejo"
+                                            : "text-bunulrejo"
+                                    }`}
+                                >
+                                    {nav.label}
+                                </Link>
+                            )}
+                            {nav.dropdown && isLayananOpen && (
+                                <div
+                                    className="absolute left-0 mt-2 w-40 bg-white rounded-lg shadow-lg"
+                                    onBlur={handleClickOutside}
+                                    tabIndex={0}
+                                >
+                                    {nav.dropdown.map((item, subIndex) => (
+                                        <Link
+                                            key={subIndex}
+                                            href={item.href}
+                                            className="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     ))}
                 </nav>
             </div>

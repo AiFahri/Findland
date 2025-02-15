@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
-import logofindland from "../../assets/findland.svg";
+import logofindland from "../../../public/assets/findland.svg";
 import dropdown from "../../assets/dropdown.svg";
 import SearchBar from "./SearchBar";
 import { Link } from "@inertiajs/react";

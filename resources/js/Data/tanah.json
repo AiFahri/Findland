@@ -1,50 +1,74 @@
 [
     {
         "image": "/assets/tanah1.jpg",
+        "images": ["/assets/tanah1.jpg", "/assets/tanah2.jpg"],
         "status": "Dijual",
         "price": "200000000",
         "place": "Blimbing, Kota Malang",
-        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        "id": "1"
+        "description": "Dijual cepat tanah seluas 15m di daerah Blimbing lokasi strategis",
+        "id": "1",
+        "desc_detail": "Lokasi yang strategis tentu saja harus memiliki akses yang lebar. Tanah ini memiliki akses jalan lebar hingga 7 meter.\n\nInfo sekitar lokasi:\n- 5 Menit dari Kampus Polinema\n- 10 Menit dari Kampus UB\n- 15 Menit dari Kampus UM",
+        "maps": "https://goo.gl/maps/example1",
+        "wa": "https://wa.me/6281234567891"
     },
     {
         "image": "/assets/tanah2.jpg",
+        "images": ["/assets/tanah2.jpg", "/assets/tanah1.jpg"],
         "status": "Disewa",
         "price": "200000000",
-        "place": "Blimbing, Kota Malang",
+        "place": "Sumberpucung, Kota Malang",
         "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        "id": "2"
+        "id": "2",
+        "desc_detail": "Tanah dengan potensi investasi tinggi, berlokasi di area berkembang. Memiliki akses jalan yang baik dan dekat dengan fasilitas penting.\n\nInfo sekitar lokasi:\n- 7 Menit dari Pasar Sumberpucung\n- 12 Menit dari Kantor Kecamatan\n- 20 Menit dari Pusat Kota",
+        "maps": "https://goo.gl/maps/example2",
+        "wa": "https://wa.me/6281234567892"
     },
     {
         "image": "/assets/tanah1.jpg",
+        "images": ["/assets/tanah1.jpg", "/assets/tanah2.jpg"],
         "status": "Dijual",
         "price": "200000000",
-        "place": "Blimbing, Kota Malang",
-        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        "id": "3"
+        "place": "Lowokwaru, Kota Malang",
+        "description": "Dijual cepat tanah seluas 100m di daerah Lowokwaru lokasi strategis",
+        "id": "3",
+        "desc_detail": "Lokasi yang sangat strategis dengan lingkungan yang nyaman dan akses mudah. Cocok untuk berbagai keperluan investasi atau pembangunan.\n\nInfo sekitar lokasi:\n- 3 Menit dari Universitas Negeri Malang\n- 8 Menit dari Mall Sarinah\n- 15 Menit dari Bandara Abdul Rachman Saleh",
+        "maps": "https://goo.gl/maps/example3",
+        "wa": "https://wa.me/6281234567893"
     },
     {
         "image": "/assets/tanah2.jpg",
+        "images": ["/assets/tanah2.jpg", "/assets/tanah1.jpg"],
         "status": "Dijual",
         "price": "200000000",
-        "place": "Blimbing, Kota Malang",
-        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        "id": "4"
+        "place": "Suhat, Kota Malang",
+        "description": "Dijual cepat tanah seluas 18m di daerah Suhat lokasi strategis",
+        "id": "4",
+        "desc_detail": "Tanah dengan lokasi premium di area Suhat, memiliki potensi pengembangan yang sangat baik. Akses jalan lebar dan lingkungan yang asri.\n\nInfo sekitar lokasi:\n- 5 Menit dari Stadion Kanjuruhan\n- 10 Menit dari Pusat Perbelanjaan\n- 12 Menit dari Kampus Swasta",
+        "maps": "https://goo.gl/maps/example4",
+        "wa": "https://wa.me/6281234567894"
     },
     {
         "image": "/assets/tanah1.jpg",
+        "images": ["/assets/tanah1.jpg", "/assets/tanah2.jpg"],
         "status": "Dijual",
         "price": "200000000",
-        "place": "Blimbing, Kota Malang",
-        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        "id": "5"
+        "place": "Kota, Kota Malang",
+        "description": "Dijual cepat tanah seluas 103m di daerah Kota lokasi strategis",
+        "id": "5",
+        "desc_detail": "Berlokasi di pusat kota dengan akses yang sangat mudah. Cocok untuk berbagai jenis investasi dan pengembangan properti.\n\nInfo sekitar lokasi:\n- 2 Menit dari Balai Kota Malang\n- 5 Menit dari Kantor Pemerintahan\n- 8 Menit dari Pusat Bisnis",
+        "maps": "https://goo.gl/maps/example5",
+        "wa": "https://wa.me/6281234567895"
     },
     {
         "image": "/assets/tanah2.jpg",
+        "images": ["/assets/tanah2.jpg", "/assets/tanah1.jpg"],
         "status": "Dijual",
         "price": "200000000",
-        "place": "Blimbing, Kota Malang",
-        "description": "Dijual cepat tanah seluas 11m di daerah sumberpucung lokasi strategis",
-        "id": "6"
+        "place": "Gondanglegi, Kota Malang",
+        "description": "Dijual cepat tanah seluas 124m di daerah Gondanglegi lokasi strategis",
+        "id": "6",
+        "desc_detail": "Tanah dengan pemandangan indah dan akses yang baik. Cocok untuk investasi jangka panjang atau pembangunan perumahan.\n\nInfo sekitar lokasi:\n- 6 Menit dari Pasar Gondanglegi\n- 15 Menit dari Pusat Kecamatan\n- 20 Menit dari Kota Malang",
+        "maps": "https://goo.gl/maps/example6",
+        "wa": "https://wa.me/6281234567896"
     }
 ]

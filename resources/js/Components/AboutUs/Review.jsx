@@ -6,7 +6,7 @@ import { Link, useForm, usePage } from "@inertiajs/react";
 import { useState } from "react";
 
 const Review = ({ reviews }) => {
-    const { auth } = usePage().props; // Untuk mendapatkan user login
+    const { auth } = usePage().props;
     const [rating, setRating] = useState(5);
     const form = useForm({
         content: "",
@@ -18,23 +18,20 @@ const Review = ({ reviews }) => {
         form.post("/reviews", {
             onSuccess: () => {
                 form.reset();
-                setRating(5); // Reset rating setelah kirim
+                setRating(5);
             },
         });
     };
     return (
         <>
-            {/* Section Ulasan */}
             <div className="mt-8 bg-white border  rounded-3xl p-10 md:p-12 max-w-7xl mx-auto relative">
                 <div className="grid md:grid-cols-2 gap-12">
-                    {/* Judul */}
                     <div>
                         <h2 className="text-4xl md:text-5xl font-bold text-green-900">
                             Apa kata <br /> Customer Kami
                         </h2>
                     </div>
 
-                    {/* Form Ulasan */}
                     <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-200">
                         <h3 className="text-lg font-semibold text-green-700 flex items-center gap-2">
                             <span className="text-2xl">“</span> Masukkan Ulasan
@@ -50,7 +47,6 @@ const Review = ({ reviews }) => {
                             }
                         ></textarea>
 
-                        {/* Rating Bintang */}
                         <div className="flex items-center justify-between mt-4">
                             <div className="flex gap-1">
                                 {[1, 2, 3, 4, 5].map((i) => (
@@ -79,8 +75,6 @@ const Review = ({ reviews }) => {
                         </div>
                     </div>
                 </div>
-
-                {/* Slider Review */}
                 <Swiper
                     modules={[Navigation]}
                     navigation

@@ -14,14 +14,14 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-        'reviews' => \App\Models\Review::with('user')->latest()->get()
+        
     ]);
 });
 Route::get('/tentangkami', function () {
-    return Inertia::render('AboutUs', [
+    return Inertia::render('AboutsUs', [
         'reviews' => \App\Models\Review::with('user')->latest()->get()
     ]);
-})->name('AboutUs');
+})->name('AboutsUs');
 Route::get('/layanan/beli', function () {
     return Inertia::render('Layanan/Beli');
 })->name('layanan.beli');

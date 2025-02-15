@@ -17,7 +17,7 @@ class ReviewController extends Controller
         ->take(3) 
         ->get();
 
-    return Inertia::render('AboutUs', [
+    return Inertia::render('AboutsUs', [
         'reviews' => $reviews
     ]);
 }

@@ -2,16 +2,30 @@ import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import Card from "../Components/Card";
 import datatanah from "../Data/tanah.json";
+import findlandputih from "../../../public/assets/findland_white.svg";
 import { Link } from "@inertiajs/react";
 
 const Home = () => {
     return (
         <div className="px-12 py-8">
             <Navbar />
-            <img
-                src="/assets/landingpage.jpg"
-                className="w-full h-full object-cover mt-4"
-            />
+            <div className="w-full h-full object-cover mt-4">
+                <img src="/assets/landingpage.jpg" className="" />
+                <div className="relative font-bold text-5xl text-white top-1/2 bottom-24 left-1/2 ml-8 transform -translate-x-1/2 -translate-y-1/2">
+                    <h1>Jual Beli Tanah</h1>
+                    <span>Terpercaya</span>
+                    <div className="flex items-center gap-1 mt-2">
+                        <img
+                            src={findlandputih}
+                            alt="Findland Logo"
+                            className="w-12 h-12"
+                        />
+                        <span className="font-light font-sonsie text-sm text-white">
+                            Findland
+                        </span>
+                    </div>
+                </div>
+            </div>
 
             <h1 className="mt-12 text-4xl font-extrabold text-[#3E5245]">
                 Properti Terbaru
