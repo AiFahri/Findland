@@ -8,7 +8,7 @@ import { usePage } from "@inertiajs/react";
 
 const navLinks = [
     { href: "/", label: "Beranda" },
-    { href: "/aboutus", label: "Tentang Kami" },
+    { href: "/tentangkami", label: "Tentang Kami" },
     {
         href: "/layanan",
         label: "Layanan",

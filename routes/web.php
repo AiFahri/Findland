@@ -9,21 +9,19 @@ use App\Http\Controllers\ReviewController;
 
 
 Route::get('/', function () {
-    return Inertia::render('AboutUs', [
+    return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
-    ]);
-});
-Route::get('/beranda', function () {
-    return Inertia::render('Home', [
         'reviews' => \App\Models\Review::with('user')->latest()->get()
     ]);
-})->name('home');
-Route::get('/tentangkami', function () {
-    return Inertia::render('AboutUs');
 });
+Route::get('/tentangkami', function () {
+    return Inertia::render('AboutUs', [
+        'reviews' => \App\Models\Review::with('user')->latest()->get()
+    ]);
+})->name('AboutUs');
 Route::get('/layanan/beli', function () {
     return Inertia::render('Layanan/Beli');
 })->name('layanan.beli');
