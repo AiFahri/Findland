@@ -9,7 +9,8 @@
         "id": "1",
         "desc_detail": "Lokasi yang strategis tentu saja harus memiliki akses yang lebar. Tanah ini memiliki akses jalan lebar hingga 7 meter.\n\nInfo sekitar lokasi:\n- 5 Menit dari Kampus Polinema\n- 10 Menit dari Kampus UB\n- 15 Menit dari Kampus UM",
         "maps": "https://goo.gl/maps/example1",
-        "wa": "https://wa.me/6281234567891"
+        "wa": "https://wa.me/6281234567891",
+        "featured": true
     },
     {
         "image": "/assets/tanah2.jpg",
@@ -33,7 +34,8 @@
         "id": "3",
         "desc_detail": "Lokasi yang sangat strategis dengan lingkungan yang nyaman dan akses mudah. Cocok untuk berbagai keperluan investasi atau pembangunan.\n\nInfo sekitar lokasi:\n- 3 Menit dari Universitas Negeri Malang\n- 8 Menit dari Mall Sarinah\n- 15 Menit dari Bandara Abdul Rachman Saleh",
         "maps": "https://goo.gl/maps/example3",
-        "wa": "https://wa.me/6281234567893"
+        "wa": "https://wa.me/6281234567893",
+        "featured": true
     },
     {
         "image": "/assets/tanah2.jpg",
@@ -57,7 +59,8 @@
         "id": "5",
         "desc_detail": "Berlokasi di pusat kota dengan akses yang sangat mudah. Cocok untuk berbagai jenis investasi dan pengembangan properti.\n\nInfo sekitar lokasi:\n- 2 Menit dari Balai Kota Malang\n- 5 Menit dari Kantor Pemerintahan\n- 8 Menit dari Pusat Bisnis",
         "maps": "https://goo.gl/maps/example5",
-        "wa": "https://wa.me/6281234567895"
+        "wa": "https://wa.me/6281234567895",
+        "featured": true
     },
     {
         "image": "/assets/tanah2.jpg",
@@ -69,6 +72,7 @@
         "id": "6",
         "desc_detail": "Tanah dengan pemandangan indah dan akses yang baik. Cocok untuk investasi jangka panjang atau pembangunan perumahan.\n\nInfo sekitar lokasi:\n- 6 Menit dari Pasar Gondanglegi\n- 15 Menit dari Pusat Kecamatan\n- 20 Menit dari Kota Malang",
         "maps": "https://goo.gl/maps/example6",
-        "wa": "https://wa.me/6281234567896"
+        "wa": "https://wa.me/6281234567896",
+        "featured": true
     }
 ]

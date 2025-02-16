@@ -24,16 +24,16 @@ Route::get('/tentangkami', function () {
     ]);
 })->name('AboutsUs');
 Route::get('/layanan/beli', function () {
-    return Inertia::render('Layanan/Beli');
+    return Inertia::render('Layanan/Properti', ['status' => 'Dijual']);
 })->name('layanan.beli');
+
+Route::get('/layanan/sewa', function () {
+    return Inertia::render('Layanan/Properti', ['status' => 'Disewa']);
+})->name('layanan.sewa');
 
 Route::get('/layanan/jual', function () {
     return Inertia::render('Pricing');
 })->name('layanan.jual');
-
-Route::get('/layanan/sewa', function () {
-    return Inertia::render('Layanan/Sewa');
-})->name('layanan.sewa');
 
 Route::get('/faq', function () {
     return Inertia::render('Faq');

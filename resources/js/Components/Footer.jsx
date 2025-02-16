@@ -101,53 +101,58 @@ const Footer = () => {
                         Findland
                     </span>
                 </div>
-                <nav className="flex gap-6 mt-4 md:mt-0">
+                <nav className="flex flex-row flex-wrap justify-start items-center gap-4 mt-4 md:mt-0">
                     {navLinks.map((nav, index) => (
                         <div
                             key={index}
-                            className="relative group p-4 md:p-4"
+                            className="relative group"
                             ref={dropdownRef}
                         >
                             {nav.dropdown ? (
-                                <button
-                                    onClick={handleToggle}
-                                    className="flex items-center text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 cursor-pointer"
-                                >
-                                    {nav.label}{" "}
-                                    <img
-                                        src={dropdown}
-                                        alt="Dropdown"
-                                        className="w-4 h-4 ml-1"
-                                    />
-                                </button>
+                                <div className="relative">
+                                    <button
+                                        onClick={handleToggle}
+                                        className="flex items-center text-white hover:text-bunulrejo 
+                        hover:underline hover:underline-offset-2 cursor-pointer"
+                                    >
+                                        <span>{nav.label}</span>
+                                        <img
+                                            src={dropdown}
+                                            alt="Dropdown"
+                                            className="w-4 h-4 ml-1"
+                                        />
+                                    </button>
+                                    {nav.dropdown && isLayananOpen && (
+                                        <div
+                                            className="absolute left-0 mt-2 w-40 bg-white rounded-lg shadow-lg z-50"
+                                            onBlur={handleClickOutside}
+                                            tabIndex={0}
+                                        >
+                                            {nav.dropdown.map(
+                                                (item, subIndex) => (
+                                                    <Link
+                                                        key={subIndex}
+                                                        href={item.href}
+                                                        className="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg"
+                                                    >
+                                                        {item.label}
+                                                    </Link>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             ) : (
                                 <Link
                                     href={nav.href}
                                     className={`text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 ${
                                         url === nav.href
                                             ? "text-bunulrejo"
-                                            : "text-bunulrejo"
+                                            : "text-white"
                                     }`}
                                 >
                                     {nav.label}
                                 </Link>
-                            )}
-                            {nav.dropdown && isLayananOpen && (
-                                <div
-                                    className="absolute left-0 mt-2 w-40 bg-white rounded-lg shadow-lg"
-                                    onBlur={handleClickOutside}
-                                    tabIndex={0}
-                                >
-                                    {nav.dropdown.map((item, subIndex) => (
-                                        <Link
-                                            key={subIndex}
-                                            href={item.href}
-                                            className="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg"
-                                        >
-                                            {item.label}
-                                        </Link>
-                                    ))}
-                                </div>
                             )}
                         </div>
                     ))}

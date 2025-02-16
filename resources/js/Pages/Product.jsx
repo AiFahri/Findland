@@ -12,9 +12,21 @@ const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
-const Product = ({ data }) => {
+const Product = ({ data, selectedProperty }) => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    useEffect(() => {
+        if (selectedProperty) {
+            const matchedProduct = data.find(
+                (product) => product.id === selectedProperty.id
+            );
+            if (matchedProduct) {
+                setSelectedProduct(matchedProduct);
+                setCurrentImageIndex(0);
+            }
+        }
+    }, [selectedProperty, data]);
 
     useEffect(() => {
         setSelectedProduct(null);
