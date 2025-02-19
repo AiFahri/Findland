@@ -6,34 +6,26 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\LandListingController;
+use App\Http\Controllers\PropertyListingController;
 
 
 
-Route::get('/', function () {
-    return Inertia::render('Home', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-        
-    ]);
-});
+Route::get('/', [PropertyListingController::class, 'getHomeProperties'])->name('home');
+
 Route::get('/tentangkami', function () {
     return Inertia::render('AboutsUs', [
         'reviews' => \App\Models\Review::with('user')->latest()->get()
     ]);
 })->name('AboutsUs');
-Route::get('/layanan/beli', function () {
-    return Inertia::render('Layanan/Properti', ['status' => 'Dijual']);
-})->name('layanan.beli');
+Route::get('/layanan/beli', [PropertyListingController::class, 'index'])
+    ->defaults('status', 'Dijual')
+    ->name('layanan.beli');
 
-Route::get('/layanan/sewa', function () {
-    return Inertia::render('Layanan/Properti', ['status' => 'Disewa']);
-})->name('layanan.sewa');
+Route::get('/layanan/sewa', [PropertyListingController::class, 'index'])
+    ->defaults('status', 'Disewa')
+    ->name('layanan.sewa');
 
-Route::get('/layanan/jual', function () {
-    return Inertia::render('Pricing');
-})->name('layanan.jual');
+Route::get('/layanan/properti/{id}', [PropertyListingController::class, 'show'])->name('properties.show');
 
 Route::get('/faq', function () {
     return Inertia::render('Faq');

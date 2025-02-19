@@ -1,4 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, {
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -7,41 +14,74 @@ import "swiper/css/pagination";
 import Card from "../Components/Card";
 import logomap from "../../assets/map.svg";
 import logowa from "../../assets/wa.svg";
+import { formatRupiah, truncateText } from "@/Utils/formatter";
 
-const formatPrice = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-};
-
-const Product = ({ data, selectedProperty }) => {
+const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const productContainerRef = useRef(null);
+
+    // Ensure data is an array and not undefined
+    const propertyData = useMemo(
+        () => (Array.isArray(data) ? data : []),
+        [data]
+    );
+    useImperativeHandle(ref, () => ({
+        resetSelectedProduct() {
+            setSelectedProduct(null);
+            setCurrentImageIndex(0);
+        },
+    }));
 
     useEffect(() => {
-        if (selectedProperty) {
-            const matchedProduct = data.find(
-                (product) => product.id === selectedProperty.id
+        if (initialSelectedProperty) {
+            // Find the matching property in the current data
+            const matchedProperty = propertyData.find(
+                (property) => property.id === initialSelectedProperty.id
             );
-            if (matchedProduct) {
-                setSelectedProduct(matchedProduct);
-                setCurrentImageIndex(0);
+
+            if (matchedProperty) {
+                setSelectedProduct(matchedProperty);
+
+                // Scroll to the top of the product container
+                if (productContainerRef.current) {
+                    productContainerRef.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                }
             }
         }
-    }, [selectedProperty, data]);
+    }, [initialSelectedProperty, propertyData]);
 
     useEffect(() => {
-        setSelectedProduct(null);
-        setCurrentImageIndex(0);
-    }, [data]);
+        if (!selectedProduct && propertyData.length > 0) {
+            setSelectedProduct(null);
+            setCurrentImageIndex(0);
+        }
+    }, [propertyData]);
 
     const handleProductSelect = (product) => {
+        // Scroll to the top of the product container
+        if (productContainerRef.current) {
+            productContainerRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }
+
         setSelectedProduct(product);
         setCurrentImageIndex(0);
     };
 
+    if (!propertyData || propertyData.length === 0) {
+        return null;
+    }
+
     return (
-        <div className="">
+        <div ref={productContainerRef}>
             {selectedProduct && (
-                <section className="rounded-3xl shadow-lg mx-auto flex flex-col md:flex-row items-center md:items-start p-6 md:p-0">
+                <section className="rounded-3xl shadow-lg mx-auto flex flex-col md:flex-row items-center md:items-start p-6 md:p-0 mt-4">
                     <div className="relative w-full md:w-3/5 aspect-video rounded-xl overflow-hidden">
                         <Swiper
                             modules={[Navigation, Pagination]}
@@ -83,7 +123,7 @@ const Product = ({ data, selectedProperty }) => {
                             {selectedProduct.place}
                         </h2>
                         <p className="text-3xl font-bold text-[#235347]">
-                            Rp {formatPrice(selectedProduct.price)}
+                            {formatRupiah(selectedProduct.price)}
                         </p>
                         <span className="flex items-center justify-center text-sm border w-20 bg-lowokwaru text-white rounded-md ">
                             {selectedProduct.status}
@@ -124,7 +164,7 @@ const Product = ({ data, selectedProperty }) => {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 mb-8">
-                {data.map((product, index) => (
+                {propertyData.map((product, index) => (
                     <div
                         key={index}
                         onClick={() => handleProductSelect(product)}
@@ -133,8 +173,8 @@ const Product = ({ data, selectedProperty }) => {
                         <Card
                             image={product.image}
                             status={product.status}
-                            price={formatPrice(product.price)}
-                            description={product.description}
+                            price={formatRupiah(product.price)}
+                            description={truncateText(product.description, 50)}
                             place={product.place}
                         />
                     </div>
@@ -142,6 +182,6 @@ const Product = ({ data, selectedProperty }) => {
             </div>
         </div>
     );
-};
+});
 
 export default Product;
