@@ -26,5 +26,9 @@ class DatabaseSeeder extends Seeder
 
         // Generate 50 property listings
         PropertyListing::factory()->count(50)->create();
+        $this->call([
+            AdminUserSeeder::class,
+            // Other seeders
+        ]);
     }
 }

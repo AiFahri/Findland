@@ -5,16 +5,25 @@ import Navbar from "@/Components/Navbar";
 import { usePage, useForm } from "@inertiajs/react";
 
 const Jual = () => {
-    const { packageId } = usePage().props ?? {}; // Ambil package dari backend
+    const { packageId } = usePage().props ?? {};
     const [selectedPackage, setSelectedPackage] = useState(packageId || null);
-    const [images, setImages] = useState([]); // State untuk menyimpan gambar
-    const [errorMessage, setErrorMessage] = useState(""); // Error pesan jika gambar tidak sesuai
+    const [images, setImages] = useState([]);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const { flash, errors } = usePage().props;
 
     useEffect(() => {
         if (packageId) {
             setSelectedPackage(packageId);
         }
-    }, [packageId]);
+        if (flash?.success) {
+            setSuccessMessage(flash.success);
+        }
+        if (flash?.error) {
+            setErrorMessage(flash.error);
+        }
+    }, [packageId, flash]);
+
     const [saveInfo, setSaveInfo] = useState(false);
     const form = useForm({
         package_id: selectedPackage || "",
@@ -29,6 +38,7 @@ const Jual = () => {
         ktp_scan: null,
         land_photos: [],
     });
+
     const handleFileUpload = (event) => {
         const files = event.target.files;
         if (files.length + images.length > 4) {
@@ -37,6 +47,7 @@ const Jual = () => {
         }
         handleFiles(files);
     };
+
     const handleDrop = (event) => {
         event.preventDefault();
         const files = event.dataTransfer.files;
@@ -64,6 +75,10 @@ const Jual = () => {
             reader.onloadend = () => {
                 validImages.push({ file, preview: reader.result });
                 setImages([...validImages]);
+                form.setData(
+                    "land_photos",
+                    validImages.map((img) => img.file)
+                );
             };
             reader.readAsDataURL(file);
         }
@@ -74,13 +89,56 @@ const Jual = () => {
     const removeImage = (index) => {
         const newImages = images.filter((_, i) => i !== index);
         setImages(newImages);
+        form.setData(
+            "land_photos",
+            newImages.map((img) => img.file)
+        );
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setSuccessMessage("");
+        setErrorMessage("");
+        const formData = new FormData();
+
+        Object.keys(form.data).forEach(key => {
+            if (key !== 'land_photos' && key !== 'ktp_scan') {
+                formData.append(key, form.data[key]);
+            }
+        });
+
+        if (form.data.ktp_scan) {
+            formData.append("ktp_scan", form.data.ktp_scan);
+        }
+
+        form.data.land_photos.forEach((file, index) => {
+            formData.append(`land_photos[${index}]`, file);
+        });
+
+        if (selectedPackage) {
+            formData.append("package_id", selectedPackage);
+        }
+
         form.post("/jual-lahan", {
+            data: formData,
             forceFormData: true,
-            onSuccess: () => form.reset(),
+            onSuccess: () => {
+                form.reset();
+                setImages([]);
+                setSuccessMessage(
+                    "Pengajuan lahan berhasil dikirim. Silakan tunggu konfirmasi admin."
+                );
+            },
+            onError: (errors) => {
+                console.error("Submission errors:", errors);
+                const errorMessages = Object.entries(errors)
+                    .map(([key, message]) => `${key}: ${message}`)
+                    .join("\n");
+
+                setErrorMessage(
+                    `Gagal mengirim pengajuan. Silakan periksa kembali data Anda:\n${errorMessages}`
+                );
+            },
         });
     };
 
@@ -92,6 +150,24 @@ const Jual = () => {
                 Jual Lahan - Paket{" "}
                 {selectedPackage ? selectedPackage : "Tidak ada paket terpilih"}
             </h1>
+            {successMessage && (
+                <div
+                    className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+                    role="alert"
+                >
+                    <span className="block sm:inline">{successMessage}</span>
+                </div>
+            )}
+
+            {/* Error Message */}
+            {errorMessage && (
+                <div
+                    className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                    role="alert"
+                >
+                    <span className="block sm:inline">{errorMessage}</span>
+                </div>
+            )}
             <p className="text-lg text-gray-700 mb-6">
                 Ingin menjual properti Anda? Silahkan lengkapi data berikut
             </p>
@@ -227,9 +303,9 @@ const Jual = () => {
                         <button
                             type="submit"
                             className="mt-6 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition"
-                            disabled={images.length !== 4} // Hanya aktif jika sudah upload 4 gambar
+                            disabled={images.length !== 4 || form.processing}
                         >
-                            Kirim
+                            {form.processing ? "Mengirim..." : "Kirim"}
                         </button>
                     </div>
                 </form>

@@ -22,6 +22,8 @@ const navLinks = [
 ];
 
 const Navbar = () => {
+    const { flash } = usePage().props;
+
     const { url } = usePage();
     const [isLayananOpen, setIsLayananOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,7 +43,7 @@ const Navbar = () => {
     };
 
     return (
-        <div className="bg-[#153832] p-2 rounded-full mt-2 md:mt-0 flex items-center justify-between px-6 md:px-12 relative">
+        <div className="bg-[#153832] p-2 rounded-full mt-2 md:mt-0 flex items-center justify-between px-6 md:px-12 relative z-50">
             <div className="flex items-center gap-2">
                 <img
                     src={logofindland}

@@ -8,8 +8,6 @@ const Properti = ({ properties, status, selectedProperty }) => {
     const { data, links, current_page, last_page } = properties;
     const propertiContainerRef = useRef(null);
     const productRef = useRef(null);
-
-    // Memoized locations
     const locations = useMemo(() => {
         const allLocations = [
             "Semua Lokasi",
@@ -25,7 +23,6 @@ const Properti = ({ properties, status, selectedProperty }) => {
     const [selectedLocation, setSelectedLocation] = useState("Semua Lokasi");
     const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
 
-    // Memoized filtered data
     const filteredData = useMemo(() => {
         return data.filter((item) => {
             const statusMatch = item.status === status;
@@ -37,7 +34,6 @@ const Properti = ({ properties, status, selectedProperty }) => {
         });
     }, [data, status, selectedLocation]);
 
-    // Scroll to top when page changes
     useEffect(() => {
         if (propertiContainerRef.current) {
             propertiContainerRef.current.scrollIntoView({
@@ -46,13 +42,10 @@ const Properti = ({ properties, status, selectedProperty }) => {
             });
         }
     }, [current_page]);
-
-    // Handle location selection
     const handleLocationSelect = (location) => {
         setSelectedLocation(location);
         setIsLocationDropdownOpen(false);
-        
-        // Reset selected product when filtering
+
         if (productRef.current) {
             productRef.current.resetSelectedProduct();
         }
@@ -69,28 +62,28 @@ const Properti = ({ properties, status, selectedProperty }) => {
                 <h1 className="text-4xl font-extrabold text-[#3E5245] mr-4 mt-4 flex items-center justify-center border w-auto p-3 bg-bunulrejo rounded-md">
                     {status === "Dijual" ? "Beli" : "Sewa"} Lahan
                 </h1>
-                
-                {/* Mobile Dropdown */}
                 <div className="w-full md:hidden">
-                    <div 
-                        onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
+                    <div
+                        onClick={() =>
+                            setIsLocationDropdownOpen(!isLocationDropdownOpen)
+                        }
                         className="w-full p-2 border rounded-md flex justify-between items-center cursor-pointer"
                     >
                         <span>{selectedLocation}</span>
-                        <svg 
+                        <svg
                             className={`w-5 h-5 transform transition-transform ${
-                                isLocationDropdownOpen ? 'rotate-180' : ''
-                            }`} 
-                            fill="none" 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24" 
+                                isLocationDropdownOpen ? "rotate-180" : ""
+                            }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                         >
-                            <path 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round" 
-                                strokeWidth={2} 
-                                d="M19 9l-7 7-7-7" 
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
                             />
                         </svg>
                     </div>
@@ -99,7 +92,9 @@ const Properti = ({ properties, status, selectedProperty }) => {
                             {locations.map((location, index) => (
                                 <div
                                     key={index}
-                                    onClick={() => handleLocationSelect(location)}
+                                    onClick={() =>
+                                        handleLocationSelect(location)
+                                    }
                                     className="p-2 hover:bg-gray-100 cursor-pointer"
                                 >
                                     {location}
@@ -108,8 +103,6 @@ const Properti = ({ properties, status, selectedProperty }) => {
                         </div>
                     )}
                 </div>
-
-                {/* Desktop Buttons */}
                 <div className="hidden md:flex flex-wrap gap-2">
                     {locations.map((location, index) => (
                         <button
@@ -135,7 +128,6 @@ const Properti = ({ properties, status, selectedProperty }) => {
                         initialSelectedProperty={selectedProperty}
                     />
 
-                    {/* Pagination */}
                     {last_page > 1 && (
                         <div className="flex justify-center mt-8 space-x-2 mb-6">
                             {links.map((link, index) => (

@@ -65,7 +65,12 @@ const Pricing = () => {
                                     href={route("land.create", {
                                         package: selectedPackage,
                                     })}
-                                    className="mt-4 w-full px-4 py-2 rounded-lg border bg-gray-200 border-bunulrejo text-lowokwaru hover:bg-bunulrejo hover:text-lowokwaru transition"
+                                    className={`mt-4 w-full px-4 py-2 rounded-lg border transition ${
+                                        selectedPackage 
+                                            ? "bg-bunulrejo text-white hover:bg-opacity-90" 
+                                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                    }`}
+                                    disabled={!selectedPackage}
                                 >
                                     Choose plan
                                 </Link>

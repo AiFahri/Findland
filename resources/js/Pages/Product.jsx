@@ -21,11 +21,28 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const productContainerRef = useRef(null);
 
-    // Ensure data is an array and not undefined
     const propertyData = useMemo(
         () => (Array.isArray(data) ? data : []),
         [data]
     );
+
+    const normalizeImages = (product) => {
+        if (!product) return [];
+        if (Array.isArray(product.images)) {
+            return product.images;
+        }
+
+        if (
+            product.land_listing &&
+            Array.isArray(product.land_listing.images)
+        ) {
+            return product.land_listing.images.map((img) =>
+                typeof img === "object" ? img.path : img
+            );
+        }
+        return product.image ? [product.image] : [];
+    };
+
     useImperativeHandle(ref, () => ({
         resetSelectedProduct() {
             setSelectedProduct(null);
@@ -35,15 +52,12 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
 
     useEffect(() => {
         if (initialSelectedProperty) {
-            // Find the matching property in the current data
             const matchedProperty = propertyData.find(
                 (property) => property.id === initialSelectedProperty.id
             );
 
             if (matchedProperty) {
                 setSelectedProduct(matchedProperty);
-
-                // Scroll to the top of the product container
                 if (productContainerRef.current) {
                     productContainerRef.current.scrollIntoView({
                         behavior: "smooth",
@@ -62,7 +76,6 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
     }, [propertyData]);
 
     const handleProductSelect = (product) => {
-        // Scroll to the top of the product container
         if (productContainerRef.current) {
             productContainerRef.current.scrollIntoView({
                 behavior: "smooth",
@@ -97,10 +110,11 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                             }
                             className="w-full h-full"
                         >
-                            {selectedProduct.images.map((image, index) => (
-                                <SwiperSlide
-                                    key={index}
-                                    className={`
+                            {normalizeImages(selectedProduct).map(
+                                (image, index) => (
+                                    <SwiperSlide
+                                        key={index}
+                                        className={`
                                         ${
                                             index === currentImageIndex
                                                 ? "opacity-100"
@@ -108,14 +122,23 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                                         }
                                         transition-opacity duration-300 ease-in-out
                                     `}
-                                >
-                                    <img
-                                        src={image}
-                                        alt={`Property View ${index + 1}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </SwiperSlide>
-                            ))}
+                                    >
+                                        <img
+                                            src={
+                                                typeof image === "object"
+                                                    ? `/storage/${image.path}`
+                                                    : image.startsWith(
+                                                          "/storage/"
+                                                      )
+                                                    ? image
+                                                    : `/storage/${image}`
+                                            }
+                                            alt={`Property View ${index + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </SwiperSlide>
+                                )
+                            )}
                         </Swiper>
                     </div>
                     <div className="w-full md:w-2/5 md:pl-6">

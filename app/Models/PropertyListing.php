@@ -2,37 +2,58 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PropertyListing extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'image', 'images', 'status', 'price', 
-        'place', 'description', 'desc_detail', 
-        'maps', 'wa', 'featured'
+        'land_listing_id', 
+        'user_id', 
+        'title', 
+        'description', 
+        'price', 
+        'location', 
+        'land_area', 
+        'certificate_type', 
+        'status', 
+        'featured',
+        'latitude', 
+        'longitude'
     ];
 
     protected $casts = [
-        'images' => 'array',
-        'featured' => 'boolean'
+        'featured' => 'boolean',
+        'price' => 'float',
+        'land_area' => 'float'
     ];
 
-    // Scope methods for filtering
+    // Relationship with LandListing
+    public function landListing()
+    {
+        return $this->belongsTo(LandListing::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Scope for active sale listings
     public function scopeForSale($query)
     {
-        return $query->where('status', 'Dijual');
+        return $query->where('status', 'active')
+                     ->where('featured', false)
+                     ->orderBy('created_at', 'desc');
     }
 
-    public function scopeForRent($query)
+    // Scope for featured listings
+    public function scopeFeaturedListings($query)
     {
-        return $query->where('status', 'Disewa');
-    }
-
-    public function scopeFeatured($query)
-    {
-        return $query->where('featured', true);
+        return $query->where('status', 'active')
+                     ->where('featured', true)
+                     ->orderBy('created_at', 'desc');
     }
 }
