@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->text('address');
             $table->string('ktp_id')->unique();
             $table->string('religion');
-            $table->decimal('monthly_income', 15, 2);
+            // $table->decimal('monthly_income', 15, 2);
             $table->string('phone_number');
             $table->string('npwp');
             $table->string('ktp_scan');

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Head, Link, useForm } from "@inertiajs/react";
 import house from "../../../assets/house.jpg";
 import google from "../../../assets/google.svg";
@@ -7,9 +7,9 @@ import emailIcon from "../../../assets/message 1.svg";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
-    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm({
         email: "",
         password: "",
         remember: false,
@@ -17,7 +17,14 @@ export default function Login() {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route("login"));
+        post(route("login"), {
+            onError: (errors) => {
+                if (errors.email) {
+                    setErrorMessage("Email atau password salah");
+                    reset("password");
+                }
+            },
+        });
     };
 
     return (
@@ -41,9 +48,9 @@ export default function Login() {
                         <h3 className="text-3xl font-extrabold mb-1">
                             Sign In
                         </h3>
-                        <p className="text-gray-600">
+                        <div className="text-gray-600">
                             Belum punya akun?{" "}
-                            <p>
+                            <span>
                                 {" "}
                                 Anda bisa{" "}
                                 <Link
@@ -52,11 +59,17 @@ export default function Login() {
                                 >
                                     Daftar disini!
                                 </Link>
-                            </p>
-                        </p>
+                            </span>
+                        </div>
                     </div>
 
-                    <form onSubmit={submit} className="space-y-4">
+                    <form onSubmit={submit} className="space-y-4" autoComplete="on">
+                        {errorMessage && (
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                                {errorMessage}
+                            </div>
+                        )}
+                        
                         <div>
                             <div className="relative flex items-center">
                                 <img
@@ -66,18 +79,18 @@ export default function Login() {
                                 />
                                 <input
                                     type="email"
+                                    name="email"
                                     placeholder="Masukkan email"
-                                    className="w-full pl-7 pr-10 px-0 py-2 border-0 border-b-2 border-pandanwangi bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition"
+                                    className={`w-full pl-7 pr-10 px-0 py-2 border-0 border-b-2 ${
+                                        errors.email || errorMessage ? 'border-red-500' : 'border-pandanwangi'
+                                    } bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition`}
                                     value={data.email}
-                                    onChange={(e) =>
-                                        setData("email", e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        setData("email", e.target.value);
+                                        setErrorMessage("");
+                                    }}
+                                    autoComplete="username email"
                                 />
-                                {errors.email && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                        {errors.email}
-                                    </div>
-                                )}
                             </div>
                         </div>
 
@@ -90,22 +103,19 @@ export default function Login() {
                                 />
                                 <input
                                     type={showPassword ? "text" : "password"}
+                                    name="password"
                                     placeholder="Masukkan Password"
-                                    className="w-full pl-7 pr-10 py-2 border-0 border-b-2 border-pandanwangi bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition"
+                                    className={`w-full pl-7 pr-10 py-2 border-0 border-b-2 ${
+                                        errors.password || errorMessage ? 'border-red-500' : 'border-pandanwangi'
+                                    } bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition`}
                                     value={data.password}
-                                    onChange={(e) =>
-                                        setData("password", e.target.value)
-                                    }
-                                    onFocus={() => setIsPasswordFocused(true)}
-                                    onBlur={() => setIsPasswordFocused(false)}
+                                    onChange={(e) => setData("password", e.target.value)}
+                                    autoComplete="current-password"
                                 />
-                                {isPasswordFocused && (
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10">
                                     <button
                                         type="button"
-                                        className="absolute right-3 top-1/2 -translate-y-1/2"
-                                        onClick={() =>
-                                            setShowPassword(!showPassword)
-                                        }
+                                        onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? (
                                             <svg
@@ -144,19 +154,15 @@ export default function Login() {
                                             </svg>
                                         )}
                                     </button>
-                                )}
-                            </div>
-                            {errors.password && (
-                                <div className="text-red-500 text-sm mt-1">
-                                    {errors.password}
                                 </div>
-                            )}
+                            </div>
                         </div>
 
                         <div className="flex items-center justify-between">
                             <label className="flex items-center">
                                 <input
                                     type="checkbox"
+                                    name="remember"
                                     className="rounded border-gray-300 text-pandanwangi shadow-sm focus:ring-pandanwangi"
                                     checked={data.remember}
                                     onChange={(e) =>
@@ -205,3 +211,13 @@ export default function Login() {
         </div>
     );
 }
+
+
+
+
+
+
+
+
+
+

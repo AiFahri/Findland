@@ -1,12 +1,9 @@
-import React from "react";
 import { Head, Link } from "@inertiajs/react";
-import Navbar from "@/Components/Navbar";
 
 const AdminDashboard = ({ auth, propertyStats, recentListings }) => {
     return (
         <div className="min-h-screen bg-gray-100">
             <Head title="Admin Dashboard" />
-            <Navbar />
 
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>

@@ -26,29 +26,26 @@ export default function Layanan() {
 
     return (
         <section className="max-w-7xl mx-auto py-16 px-6 md:px-12 lg:px-20 bg-white p-6 rounded-2xl border border-gray-200 mt-8 mb-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-green-900 mb-10">
+            <h2 className="text-5xl md:text-5xl font-bold text-green-900 mb-10">
                 Layanan
             </h2>
-
-            {/* Grid Layanan */}
             <div className="grid md:grid-cols-3 gap-6">
                 {services.map((service) => (
                     <div
                         key={service.id}
                         onMouseEnter={() => setHovered(service.id)}
                         onMouseLeave={() => setHovered(null)}
-                        className={`relative p-6 rounded-2xl transition-all duration-300 border border-gray-200 shadow-md ${
+                        className={`relative p-6 pt-36 rounded-2xl transition-all duration-300 border border-gray-200 shadow-md ${
                             hovered === service.id
-                                ? "bg-lowokwaru text-white shadow-xl"
+                                ? "bg-lowokwaru text-white shadow-xl "
                                 : "bg-white text-green-900"
                         }`}
                     >
-                        {/* Nomor */}
                         <span
                             className={`absolute top-4 right-6 text-2xl font-bold transition-all duration-300 ${
                                 hovered === service.id
-                                    ? "text-white"
-                                    : "text-green-900"
+                                    ? "text-white text-4xl"
+                                    : "text-green-900 text-4xl"
                             }`}
                         >
                             {service.id < 10 ? `0${service.id}` : service.id}
@@ -58,8 +55,8 @@ export default function Layanan() {
                         <h3
                             className={`text-2xl font-semibold transition-all duration-300 ${
                                 hovered === service.id
-                                    ? "text-white"
-                                    : "text-green-900"
+                                    ? "text-white text-4xl"
+                                    : "text-green-900 text-4xl"
                             }`}
                         >
                             {service.title}

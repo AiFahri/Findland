@@ -18,15 +18,7 @@
     font-style: normal;
 }
 
-@font-face {
-    font-family: 'Sonsie One';
-    src: url('../fonts/sonsie-one.woff2') format('woff2'),
-         url('../fonts/sonsie-one.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-/* Gunakan font di seluruh aplikasi */
 body {
     font-family: 'Satoshi', sans-serif;
 }
+

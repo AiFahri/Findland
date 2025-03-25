@@ -15,9 +15,9 @@ class AddPackageIdToLandListingsTable extends Migration
             }
 
             if (!Schema::hasColumn('land_listings', 'land_photos')) {
-                $table->text('land_photos')->nullable()->default('[]')->after('package_id');
-            } else {
-                DB::statement('ALTER TABLE land_listings MODIFY COLUMN land_photos TEXT NULL DEFAULT \'[]\'');
+                $table->text('land_photos')->nullable()->after('package_id');
+                // Set default value menggunakan DB::statement setelah kolom dibuat
+                DB::statement("UPDATE land_listings SET land_photos = '[]' WHERE land_photos IS NULL");
             }
         });
     }

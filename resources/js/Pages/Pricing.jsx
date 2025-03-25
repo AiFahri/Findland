@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@inertiajs/react";
-import Navbar from "@/Components/Navbar";
-import Footer from "@/Components/Footer";
+import MainLayout from "@/Layouts/MainLayout";
+import checklist from "../../assets/checklist.svg";
 
 const packages = [
     { id: 1, name: "Starter", price: 334000, duration: "1 Bulan" },
@@ -14,8 +14,7 @@ const Pricing = () => {
     const [selectedPackage, setSelectedPackage] = useState(null);
 
     return (
-        <div className="p-8">
-            <Navbar />
+        <>
             <div className="p-8 bg-white border rounded-2xl shadow-md mt-8 mb-8">
                 <h2 className="text-5xl font-bold text-pandanwangi mb-10 text-left ">
                     We provide the
@@ -29,29 +28,33 @@ const Pricing = () => {
                             className={`p-6 border rounded-2xl text-left transition-all duration-300 ${
                                 selectedPackage === pkg.id
                                     ? "bg-pandanwangi text-white"
-                                    : "bg-white text-gray-900"
+                                    : "bg-white text-lowokwaru"
                             }`}
                             onClick={() => setSelectedPackage(pkg.id)}
                         >
-                            <p className="text-2xl font-semibold">
+                            <p className="text-3xl font-semibold mb-4 text-lowokwaru">
                                 Rp {pkg.price.toLocaleString()}
                             </p>
                             <h3 className="text-xl font-bold">{pkg.name}</h3>
-                            <p className="text-sm text-lowokwaru">
+                            <p className="text-sm ">
                                 For most bussiness want that want to optimize
                                 web queries
                             </p>
                             <br />
-                            <p className="text-sm text-lowokwaru">
-                                Peningkatan Visibilitas
-                            </p>
-                            <p className="text-sm text-lowokwaru">
-                                Menjangkau banyak pengguna
-                            </p>
-                            <p className="text-sm text-lowokwaru">
-                                Laporan analisis
-                            </p>
-                            <p className="text-sm text-lowokwaru">
+                            <ul className="text-sm flex">
+                                <div className="flex items-center justify-center border bg-pandanwangi rounded-lg p-2 w-2 h-2">
+                                    <img
+                                        src={checklist}
+                                        className="w-1 h-1"
+                                        alt="Checklist"
+                                    ></img>
+                                </div>
+                                <li>Peningkatan Visibilitas</li>
+                                <li>Menjangkau banyak pengguna</li>
+                                <li>Laporan analisis</li>
+                            </ul>
+
+                            <p className="text-sm">
                                 Durasi posting {pkg.duration}
                             </p>
                             {pkg.popular && (
@@ -60,15 +63,15 @@ const Pricing = () => {
                                 </button>
                             )}
 
-                            <div className="mt-8 text-center">
+                            <div className="mt-12 text-center">
                                 <Link
                                     href={route("land.create", {
                                         package: selectedPackage,
                                     })}
-                                    className={`mt-4 w-full px-4 py-2 rounded-lg border transition ${
-                                        selectedPackage 
-                                            ? "bg-bunulrejo text-white hover:bg-opacity-90" 
-                                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                    className={`mt-6 w-full px-12 py-3 rounded-3xl border transition ${
+                                        selectedPackage
+                                            ? "bg-bunulrejo text-lowokwaru hover:bg-opacity-90"
+                                            : "bg-gray-200 text-lowokwaru cursor-not-allowed"
                                     }`}
                                     disabled={!selectedPackage}
                                 >
@@ -79,8 +82,9 @@ const Pricing = () => {
                     ))}
                 </div>
             </div>
-            <Footer />
-        </div>
+        </>
     );
 };
+Pricing.layout = (page) => <MainLayout children={page} />;
+
 export default Pricing;

@@ -92,7 +92,7 @@ const Review = ({ reviews }) => {
                                 <p className="text-gray-600">
                                     {review.content}
                                 </p>
-                                <div className="flex items-center gap-3 mt-4">
+                                <div className="flex justify-end items-center gap-3 mt-4">
                                     <img
                                         src={
                                             review.user.profile_picture ||

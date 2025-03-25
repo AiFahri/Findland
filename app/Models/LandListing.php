@@ -8,7 +8,7 @@ class LandListing extends Model
 {
     protected $fillable = [
         'user_id', 'full_name', 'birth_place_date', 'address', 
-        'ktp_id', 'religion', 'monthly_income', 'phone_number', 
+        'ktp_id', 'religion', 'phone_number', 
         'npwp', 'ktp_scan', 'package_id', 'land_photos', 'admin_status'
     ];
 

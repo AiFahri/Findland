@@ -27,20 +27,88 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
     );
 
     const normalizeImages = (product) => {
+        console.log("Original Product:", product);
+
         if (!product) return [];
-        if (Array.isArray(product.images)) {
-            return product.images;
+
+        // Normalize image paths
+        const normalizePath = (image) => {
+            console.log("Processing image:", image);
+
+            if (!image) return null;
+
+            // If image is already a full storage path, return as-is
+            if (image.startsWith("/storage/")) {
+                console.log("Already storage path:", image);
+                return image;
+            }
+
+            // Handle string paths
+            if (typeof image === "string") {
+                // Remove leading slashes and ensure correct storage path
+                const cleanPath = image.replace(/^\/+/, "");
+                const fullPath = `/storage/${cleanPath}`;
+                console.log("Normalized path:", fullPath);
+                return fullPath;
+            }
+
+            // If image is an object with path
+            if (typeof image === "object" && image.path) {
+                const cleanPath = image.path.replace(/^\/+/, "");
+                const fullPath = `/storage/${cleanPath}`;
+                console.log("Object image path:", fullPath);
+                return fullPath;
+            }
+
+            console.log("Unhandled image type:", typeof image);
+            return null;
+        };
+
+        // Process images from different possible sources
+        let images = [];
+
+        // Parse JSON-encoded images
+        try {
+            if (product.images && typeof product.images === "string") {
+                const parsedImages = JSON.parse(
+                    product.images.replace(/\\/g, "").replace(/^"|"$/g, "")
+                );
+                console.log("Parsed images:", parsedImages);
+                images = parsedImages
+                    .map((img) => {
+                        // Remove quotes and leading slashes
+                        const cleanImg = img
+                            .replace(/^"|"$/g, "")
+                            .replace(/^\/+/, "");
+                        return `/storage/${cleanImg}`;
+                    })
+                    .filter(Boolean);
+            }
+        } catch (error) {
+            console.error("Error parsing images:", error);
         }
 
+        // Check land_listing images
         if (
+            !images.length &&
             product.land_listing &&
             Array.isArray(product.land_listing.images)
         ) {
-            return product.land_listing.images.map((img) =>
-                typeof img === "object" ? img.path : img
-            );
+            console.log("Land listing images:", product.land_listing.images);
+            images = product.land_listing.images
+                .map(normalizePath)
+                .filter(Boolean);
         }
-        return product.image ? [product.image] : [];
+
+        // Fallback to single image
+        if (!images.length && product.image) {
+            console.log("Single image:", product.image);
+            const singleImage = normalizePath(product.image);
+            if (singleImage) images.push(singleImage);
+        }
+
+        console.log("Normalized images:", images);
+        return images;
     };
 
     useImperativeHandle(ref, () => ({
@@ -124,17 +192,23 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                                     `}
                                     >
                                         <img
-                                            src={
-                                                typeof image === "object"
-                                                    ? `/storage/${image.path}`
-                                                    : image.startsWith(
-                                                          "/storage/"
-                                                      )
-                                                    ? image
-                                                    : `/storage/${image}`
-                                            }
+                                            src={image}
                                             alt={`Property View ${index + 1}`}
                                             className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                console.error(
+                                                    "Image load error:",
+                                                    {
+                                                        originalSrc: image,
+                                                        alt: `Property View ${
+                                                            index + 1
+                                                        }`,
+                                                        fullImageObject:
+                                                            selectedProduct,
+                                                    }
+                                                );
+                                                e.target.style.display = "none";
+                                            }}
                                         />
                                     </SwiperSlide>
                                 )
@@ -194,7 +268,12 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                         className="cursor-pointer hover:scale-105 transition-transform"
                     >
                         <Card
-                            image={product.image}
+                            image={
+                                Array.isArray(product.images)
+                                    ? product.images[0]
+                                    : product.land_listing?.images?.[0] ||
+                                      product.image
+                            }
                             status={product.status}
                             price={formatRupiah(product.price)}
                             description={truncateText(product.description, 50)}

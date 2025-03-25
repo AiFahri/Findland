@@ -6,8 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import Navbar from "@/Components/Navbar";
-import Footer from "@/Components/Footer";
+import MainLayout from "@/Layouts/MainLayout";
 import Card from "@/Components/Card";
 import { formatRupiah, truncateText } from "@/Utils/formatter";
 import findlandputih from "../../../public/assets/findland_white.svg";
@@ -15,15 +14,13 @@ import findlandputih from "../../../public/assets/findland_white.svg";
 const Home = ({
     latestProperties,
     featuredProperties,
-    canLogin,
-    canRegister,
-    laravelVersion,
-    phpVersion,
+    // canLogin,
+    // canRegister,
 }) => {
     return (
-        <div className="px-12 py-8">
+        <>
             <Head title="FindLand - Temukan Properti Impian Anda" />
-            <Navbar />
+            {/* <Navbar auth={auth} /> */}
             <div className="w-full h-full object-cover mt-4">
                 <div className="relative flex items-center gap-1 mt-2">
                     <img
@@ -32,14 +29,14 @@ const Home = ({
                         alt="Landing Page"
                     />
 
-                    <div className="absolute font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white bottom-4 mb:bottom-8 left-4 sm:left-10 md:left-16">
+                    <div className="absolute font-bold text-md sm:text-3xl md:text-4xl lg:text-5xl text-white bottom-4 mb:bottom-8 left-4 sm:left-10 md:left-16">
                         <h1>Jual Beli Tanah</h1>
                         <span>Terpercaya</span>
                         <div className="flex items-center gap-x-2 mt-1 sm:mt-2">
                             <img
                                 src={findlandputih}
                                 alt="Findland Logo"
-                                className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
+                                className="w-4 h-4 sm:w-8 sm:h-8 md:w-10 md:h-10"
                             />
                             <span className="font-light font-sonsie text-xs sm:text-sm md:text-base text-white">
                                 Findland
@@ -49,10 +46,9 @@ const Home = ({
                 </div>
             </div>
 
-            {/* Properti Terbaru Section */}
             <section className="">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-4xl font-extrabold text-[#3E5245]">
+                <div className="flex justify-between items-center mt-6 mb-6">
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-[#3E5245]">
                         Properti Terbaru
                     </h1>
                     <Link
@@ -88,7 +84,7 @@ const Home = ({
             </section>
 
             <section className="">
-                <h1 className="text-4xl font-extrabold text-[#3E5245] mb-6">
+                <h1 className="text-2xl md:text-4xl font-extrabold text-[#3E5245] mt-6 mb-6">
                     Properti Pilihan
                 </h1>
                 {featuredProperties.length > 0 ? (
@@ -142,12 +138,12 @@ const Home = ({
 
             <section className="flex flex-col md:flex-row items-stretch gap-6 bg-white rounded-3xl mt-10 md:mt-8 mb-6 ">
                 <div className="bg-lowokwaru text-bunulrejo rounded-3xl flex-1 flex flex-col justify-between p-8 min-h-full md:h-auto">
-                    <div className="text-left text-xl md:text-4xl font-medium leading-tight">
+                    <div className="text-left text-md md:text-4xl font-medium leading-tight p-4">
                         <h1>Jual tanah dengan mudah</h1>
                         <h1>dan cepat hanya di</h1>
                         <h1>findland</h1>
                     </div>
-                    <button className="bg-blue-500 text-white px-6 py-3 rounded-lg font-medium self-end">
+                    <button className="bg-[#0074E8] text-white px-6 py-3 rounded-2xl font-medium self-end">
                         <Link href="/layanan/jual">Jual Sekarang</Link>
                     </button>
                 </div>
@@ -160,8 +156,7 @@ const Home = ({
                 </div>
             </section>
 
-            {/* Authentication Links */}
-            {(canLogin || canRegister) && (
+            {/* {(canLogin || canRegister) && (
                 <div className="fixed top-0 right-0 p-4 text-right">
                     {canLogin && (
                         <Link
@@ -181,11 +176,11 @@ const Home = ({
                         </Link>
                     )}
                 </div>
-            )}
-
-            <Footer />
-        </div>
+            )} */}
+        </>
     );
 };
+
+Home.layout = (page) => <MainLayout children={page} />;
 
 export default Home;

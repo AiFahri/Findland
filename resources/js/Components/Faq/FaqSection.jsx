@@ -9,17 +9,6 @@ const FaqSection = () => {
         selectedCategory: null,
     });
 
-    const faqHeaderRef = useRef(null);
-    const faqAccordionRef = useRef(null);
-    const [headerHeight, setHeaderHeight] = useState("auto");
-
-    useEffect(() => {
-        if (faqHeaderRef.current && faqAccordionRef.current) {
-            const headerHeight = faqHeaderRef.current.offsetHeight;
-            setHeaderHeight(`${headerHeight}px`);
-        }
-    }, []);
-
     const toggleAccordion = (id) => {
         setState((prevState) => ({
             ...prevState,
@@ -34,22 +23,22 @@ const FaqSection = () => {
     );
 
     return (
-        <section className="h-auto mt-32 md:h-screen relative flex flex-col md:flex-row items-center justify-between md:my-2">
-            <div className="flex flex-col md:flex-row items-center justify-center md:gap-x-12 lg:gap-x-36 w-full h-5/6 lg:px-32 container">
-                <h1 className="block md:hidden px-2 text-4xl font-bold mb-4 font-montserrat text-secondary500">
-                    Frequently Ask Questions
-                </h1>
-                <div
-                    ref={faqHeaderRef}
-                    className="w-full lg:w-1/2 md:h-[85%] hidden md:block"
-                >
-                    aa
+        <section className="w-full flex justify-center items-center mt-4 mb-8">
+            <div className="w-full max-w-5xl px-6 lg:px-12 border rounded-3xl bg-white shadow-md p-6">
+                <div className="text-center mb-6">
+                    <div className="inline-block text-md font-extrabold text-bunulrejo border w-16 px-2 py-0 bg-[#7FB290] rounded-md">
+                        <h3>FAQ's</h3>
+                    </div>
+                    <h2 className="text-5xl font-extrabold text-[#8EB69B] mt-2 mb-3">
+                        we're here to answer
+                        <h2>all your questions.</h2>
+                    </h2>
+                    <p className="text-md font-light text-lowokwaru">
+                        Jika anda memiliki pertanyaan di benak anda, semoga
+                        halaman ini bisa menjawabnya.
+                    </p>
                 </div>
-                <div
-                    ref={faqAccordionRef}
-                    className="w-full h-full lg:w-1/2 flex flex-col space-y-4 md:overflow-auto md:h-[800px] snap-y snap-mandatory no-scrollbar"
-                    style={{ height: headerHeight }}
-                >
+                <div className="w-full flex flex-col space-y-4">
                     {filteredFaqs.map((e) => (
                         <FaqAccordion
                             key={e.id}
@@ -58,7 +47,6 @@ const FaqSection = () => {
                             toggle={() => toggleAccordion(e.id)}
                             quest={e.quest}
                             answer={e.answer}
-                            className="snap-start"
                         />
                     ))}
                 </div>

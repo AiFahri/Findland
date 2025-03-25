@@ -1,28 +1,48 @@
 [
     {
         "id": "1",
-        "quest": "Ada rangkaian acara apa saja didalam Kampung Budaya 2024?",
-        "answer": "Pre - event sendiri terdiri dari : Lomba Kampung budaya, Kampung Budaya Blusukan, Talkshow dan Pameran Seni, Parade Warna - Warni Warisan. Main Event nya sendiri yaitu : Bazar Kebudayaan, Tenant UMKM, Awarding, Gelanggang Budaya Brawijaya"
+        "quest": "Apa saja dokumen yang diperlukan untuk menjual tanah?",
+        "answer": "Dokumen yang diperlukan adalah Sertifikat Hak Milik (SHM), Akta Jual Beli (AJB), dan NPWP."
     },
     {
         "id": "2",
-        "quest": "Tanggal berapa saja ya dilaksanakannya rangkaian acara Kampung Budaya 2024?",
-        "answer": "Informasi tanggal pelaksanaan akan diberitahukan di instagram kampung budaya"
+        "quest": "Bagaimana cara menentukan harga jual tanah?",
+        "answer": "Harga jual tanah ditentukan berdasarkan lokasi, ukuran, kondisi tanah, dan harga pasar."
     },
     {
         "id": "3",
-        "quest": "Lomba apa saja yang diadakan oleh Kampung Budaya 2024?",
-        "answer": "Lomba yang diadakan kampung budaya, yaitu : Lensa Budaya, Legenda Nusantara, ⁠Ekspresi, Tubuh Nasional, Persembahan, Moda Tradisional ,Bazar Kebudayaan"
+        "quest": "Apa langkah pertama yang harus saya lakukan untuk menjual tanah?",
+        "answer": "Langkah pertama adalah memastikan keabsahan dokumen dan kondisi tanah."
     },
     {
         "id": "4",
-        "quest": "Apakah ada biaya untuk registrasi lomba?",
-        "answer": "Untuk biaya registrasi lomba sendiri hanya diadakan untuk lomba kategori online saja, yaitu lensa budaya dan legenda nusantara"
+        "quest": "Apa yang harus saya lakukan saat ada calon pembeli?",
+        "answer": "Saat ada calon pembeli, berikan informasi lengkap tentang tanah dan dokumen yang diperlukan."
     },
 
     {
         "id": "5",
-        "quest": "Untuk yang tidak ikut lomba apa tetap mendapatkan stand?",
-        "answer": "Stand hanya diperuntukkan untuk forum daerah yang mengikuti lomba bazar kebudayaan yang diadakan di Gelanggang Budaya Brawijaya"
+        "quest": "Apakah ada pajak yang harus dibayar saat menjual tanah?",
+        "answer": "Ya, ada pajak PPh (Pajak Penghasilan) dan BPHTB (Bea Perolehan Hak atas Tanah dan Bangunan)."
+    },
+    {
+        "id": "6",
+        "quest": "Bagaimana cara mengurus AJB?",
+        "answer": "AJB dapat diurus melalui notaris dengan membawa dokumen yang diperlukan."
+    },
+    {
+        "id": "7",
+        "quest": "Bagaimana cara menghindari penipuan saat menjual tanah?",
+        "answer": "Pastikan dokumen asli, gunakan notaris terpercaya, dan transaksi melalui rekening resmi."
+    },
+    {
+        "id": "8",
+        "quest": "Apa yang harus saya lakukan jika terjadi sengketa?",
+        "answer": "ika terjadi sengketa, segera hubungi notaris atau pengacara untuk bantuan hukum."
+    },
+    {
+        "id": "9",
+        "quest": "Berapa lama proses penjualan tanah?",
+        "answer": "Proses penjualan tanah biasanya memakan waktu 1-3 bulan."
     }
 ]

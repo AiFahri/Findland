@@ -1,8 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Head, Link } from "@inertiajs/react";
-import Navbar from "@/Components/Navbar";
-import Footer from "@/Components/Footer";
 import Product from "../Product";
+import MainLayout from "@/Layouts/MainLayout";
 
 const Properti = ({ properties, status, selectedProperty }) => {
     const { data, links, current_page, last_page } = properties;
@@ -52,8 +51,7 @@ const Properti = ({ properties, status, selectedProperty }) => {
     };
 
     return (
-        <div ref={propertiContainerRef} className="p-8">
-            <Navbar />
+        <div ref={propertiContainerRef}>
             <Head
                 title={status === "Dijual" ? "Beli Properti" : "Sewa Properti"}
             />
@@ -160,9 +158,9 @@ const Properti = ({ properties, status, selectedProperty }) => {
                     {status === "Dijual" ? "dijual" : "disewa"}
                 </div>
             )}
-            <Footer />
         </div>
     );
 };
+Properti.layout = (page) => <MainLayout children={page} />;
 
 export default Properti;

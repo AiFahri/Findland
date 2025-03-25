@@ -1,10 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import logofindland from "../../../public/assets/findland.svg";
 import dropdown from "../../assets/dropdown.svg";
 import SearchBar from "./SearchBar";
 import { Link } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
+import LogoutIcon from "../../assets/logout.svg";
+import ProfileIcon from "../../assets/profile.svg";
+import Profile from "@/Pages/Profile/Profile";
+import Modal from "@/Components/Modal";
 
 const navLinks = [
     { href: "/", label: "Beranda" },
@@ -21,13 +25,32 @@ const navLinks = [
     { href: "/faq", label: "FAQ" },
 ];
 
-const Navbar = () => {
-    const { flash } = usePage().props;
+const Navbar = ({ auth }) => {
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        window.location.href = "/logout";
+    };
 
     const { url } = usePage();
     const [isLayananOpen, setIsLayananOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const dropdownRef = useRef(null);
 
     const handleClickOutside = (event) => {
         if (
@@ -41,6 +64,26 @@ const Navbar = () => {
     const handleToggle = () => {
         setIsLayananOpen((prev) => !prev);
     };
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        console.log("Opening modal...");
+        setModalOpen(true); // Membuka modal
+    };
+
+    const closeModal = () => {
+        if (!form.processing) {
+            // Hanya tutup modal jika form tidak sedang diproses
+            console.log("Closing modal...");
+            setModalOpen(false);
+        } else {
+            console.log("Form is processing, modal will stay open.");
+        }
+    };
+
+    useEffect(() => {
+        console.log("Modal state changed: ", isModalOpen);
+    }, [isModalOpen]); // Memantau perubahan state modal
 
     return (
         <div className="bg-[#153832] p-2 rounded-full mt-2 md:mt-0 flex items-center justify-between px-6 md:px-12 relative z-50">
@@ -97,7 +140,7 @@ const Navbar = () => {
                         )}
                         {nav.dropdown && isLayananOpen && (
                             <div
-                                className="absolute z-50 left-0 mt-2 w-40 bg-white rounded-lg shadow-lg"
+                                className="absolute z-50 left-0 mt-2 w-40 bg-pandanwangi text-white rounded-lg shadow-lg"
                                 onBlur={handleClickOutside}
                                 tabIndex={0}
                             >
@@ -105,7 +148,7 @@ const Navbar = () => {
                                     <Link
                                         key={subIndex}
                                         href={item.href}
-                                        className="block px-4 py-2 text-black hover:bg-gray-200 rounded-lg"
+                                        className="block px-4 py-2 text-white hover:bg-lowokwaru rounded-lg"
                                     >
                                         {item.label}
                                     </Link>
@@ -118,9 +161,77 @@ const Navbar = () => {
                     <SearchBar className="w-64" />
                 </div>
             </nav>
-            <button className="hidden md:flex bg-[#0074E8] rounded-full p-2 px-8 items-center justify-center font-bold text-white">
-                <Link href="/login">Login/Daftar</Link>
-            </button>
+
+            {auth.user ? (
+                <div className="relative" ref={dropdownRef}>
+                    <button
+                        onClick={() => setShowDropdown(!showDropdown)}
+                        className="flex items-center gap-3 border border-gray-200 rounded-lg px-3 py-1.5  hover:text-lowokwaru"
+                    >
+                        <span className="text-white">
+                            {auth.user.first_name} {auth.user.last_name}
+                        </span>
+                        <div className="w-8 h-8 rounded-full overflow-hidden">
+                            <img
+                                src={
+                                    auth.user.profile_picture ||
+                                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                        auth.user.first_name +
+                                            " " +
+                                            auth.user.last_name
+                                    )}`
+                                }
+                                alt="Profile"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    </button>
+                    {showDropdown && (
+                        <div
+                            className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border 
+                         border-gray-100 py-1"
+                        >
+                            <button
+                                onClick={openModal}
+                                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                            >
+                                <img
+                                    src={ProfileIcon}
+                                    alt="Logout"
+                                    className="w-5 h-5"
+                                />
+                                <span>Edit Profile</span>
+                            </button>
+                            <Modal
+                                show={isModalOpen}
+                                onClose={closeModal}
+                                title={"Edit Profile"}
+                            >
+                                <Profile auth={auth} onClose={closeModal} />
+                            </Modal>
+                            <Link
+                                href={route("logout")}
+                                method="post"
+                                as="button"
+                                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                            >
+                                <img
+                                    src={LogoutIcon}
+                                    alt="Logout"
+                                    className="w-5 h-5"
+                                />
+                                <span>Logout</span>
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <Link href="/login">
+                    <button className="hidden md:flex bg-[#0074E8] rounded-full p-2 px-8 items-center justify-center font-bold text-white">
+                        Sign In
+                    </button>
+                </Link>
+            )}
         </div>
     );
 };

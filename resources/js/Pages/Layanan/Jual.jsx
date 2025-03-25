@@ -1,8 +1,7 @@
 import { Head } from "@inertiajs/react";
-import Footer from "../../Components/Footer";
 import { useState, useEffect } from "react";
-import Navbar from "@/Components/Navbar";
 import { usePage, useForm } from "@inertiajs/react";
+import MainLayout from "@/Layouts/MainLayout";
 
 const Jual = () => {
     const { packageId } = usePage().props ?? {};
@@ -32,7 +31,6 @@ const Jual = () => {
         address: "",
         ktp_id: "",
         religion: "",
-        monthly_income: "",
         phone_number: "",
         npwp: "",
         ktp_scan: null,
@@ -101,8 +99,8 @@ const Jual = () => {
         setErrorMessage("");
         const formData = new FormData();
 
-        Object.keys(form.data).forEach(key => {
-            if (key !== 'land_photos' && key !== 'ktp_scan') {
+        Object.keys(form.data).forEach((key) => {
+            if (key !== "land_photos" && key !== "ktp_scan") {
                 formData.append(key, form.data[key]);
             }
         });
@@ -143,8 +141,7 @@ const Jual = () => {
     };
 
     return (
-        <div className="p-8">
-            <Navbar />
+        <>
             <Head title="Jual Lahan" />
             <h1 className="text-4xl font-extrabold text-[#3E5245] mb-6 mt-8">
                 Jual Lahan - Paket{" "}
@@ -159,7 +156,6 @@ const Jual = () => {
                 </div>
             )}
 
-            {/* Error Message */}
             {errorMessage && (
                 <div
                     className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
@@ -189,10 +185,6 @@ const Jual = () => {
                             { name: "address", label: "Alamat" },
                             { name: "ktp_id", label: "ID KTP" },
                             { name: "religion", label: "Agama" },
-                            {
-                                name: "monthly_income",
-                                label: "Penghasilan Per Bulan",
-                            },
                             { name: "phone_number", label: "Nomer HP" },
                             { name: "npwp", label: "NPWP" },
                         ].map((field, index) => (
@@ -310,9 +302,8 @@ const Jual = () => {
                     </div>
                 </form>
             </div>
-            <Footer />
-        </div>
+        </>
     );
 };
-
+Jual.layout = (page) => <MainLayout children={page} />;
 export default Jual;

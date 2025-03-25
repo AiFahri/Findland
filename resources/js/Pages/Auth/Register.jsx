@@ -7,9 +7,8 @@ import lockIcon from "../../../assets/padlock 1.svg";
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
-    const [isConfirmPasswordFocused, setIsConfirmPasswordFocused] =
-        useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
     const { data, setData, post, processing, errors, reset } = useForm({
         first_name: "",
         last_name: "",
@@ -21,8 +20,17 @@ export default function Register() {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route("register"));
+        setErrorMessage("");
+        post(route("register"), {
+            onError: (errors) => {
+                if (errors.email) {
+                    setErrorMessage("Email sudah terdaftar. Silakan gunakan email lain.");
+                    reset("password", "password_confirmation");
+                }
+            },
+        });
     };
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-login-pattern bg-cover bg-center">
@@ -62,21 +70,25 @@ export default function Register() {
                     </div>
 
                     <form onSubmit={submit} className="space-y-4">
+                        {errorMessage && (
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                                {errorMessage}
+                            </div>
+                        )}
+
                         <div className="flex gap-4">
                             <div className="flex-1">
                                 <input
                                     type="text"
                                     placeholder="Masukkan nama depan"
-                                    className="w-full px-0 py-2 border-0 border-b-2 border-pandanwangi bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition"
+                                    className={`w-full px-0 py-2 border-0 border-b-2 ${
+                                        errors.first_name ? 'border-red-500' : 'border-pandanwangi'
+                                    } bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition`}
                                     value={data.first_name}
-                                    onChange={(e) =>
-                                        setData("first_name", e.target.value)
-                                    }
+                                    onChange={(e) => setData("first_name", e.target.value)}
                                 />
                                 {errors.first_name && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                        {errors.first_name}
-                                    </div>
+                                    <div className="text-red-500 text-sm mt-1">{errors.first_name}</div>
                                 )}
                             </div>
                             <div className="flex-1">
@@ -101,17 +113,15 @@ export default function Register() {
                             <div className="flex-1">
                                 <input
                                     type="email"
-                                    placeholder="Masukkan nama email"
-                                    className="w-full px-0 py-2 border-0 border-b-2 border-pandanwangi bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition"
+                                    placeholder="Masukkan email"
+                                    className={`w-full px-0 py-2 border-0 border-b-2 ${
+                                        errors.email ? 'border-red-500' : 'border-pandanwangi'
+                                    } bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition`}
                                     value={data.email}
-                                    onChange={(e) =>
-                                        setData("email", e.target.value)
-                                    }
+                                    onChange={(e) => setData("email", e.target.value)}
                                 />
-                                {errors.email && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                        {errors.email}
-                                    </div>
+                                {errors.email && !errorMessage && (
+                                    <div className="text-red-500 text-sm mt-1">{errors.email}</div>
                                 )}
                             </div>
                             <div className="flex-1">
@@ -142,11 +152,11 @@ export default function Register() {
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Masukkan Password"
-                                    className="w-full pl-7 pr-10 py-2 border-0 border-b-2 border-pandanwangi bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition"
+                                    className={`w-full pl-7 pr-10 py-2 border-0 border-b-2 ${
+                                        errors.password || errorMessage ? 'border-red-500' : 'border-pandanwangi'
+                                    } bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition`}
                                     value={data.password}
-                                    onChange={(e) =>
-                                        setData("password", e.target.value)
-                                    }
+                                    onChange={(e) => setData("password", e.target.value)}
                                 />
                                 <button
                                     type="button"
@@ -193,10 +203,8 @@ export default function Register() {
                                     )}
                                 </button>
                             </div>
-                            {errors.password && (
-                                <div className="text-red-500 text-sm mt-1">
-                                    {errors.password}
-                                </div>
+                            {errors.password && !errorMessage && (
+                                <div className="text-red-500 text-sm mt-1">{errors.password}</div>
                             )}
                         </div>
 
@@ -306,3 +314,5 @@ export default function Register() {
         </div>
     );
 }
+
+
