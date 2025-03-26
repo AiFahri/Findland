@@ -11,7 +11,7 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import Card from "../Components/Card";
+import Card from "../Components/common/Card";
 import logomap from "../../assets/map.svg";
 import logowa from "../../assets/wa.svg";
 import { formatRupiah, truncateText } from "@/Utils/formatter";

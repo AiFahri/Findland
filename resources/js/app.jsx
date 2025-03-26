@@ -5,6 +5,7 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
 import MainLayout from "@/Layouts/MainLayout";
+import { PropertyProvider } from "@/contexts/PropertyContext";
 
 const appName = import.meta.env.VITE_APP_NAME;
 
@@ -19,13 +20,16 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <App
-                {...props}
-                layout={(page) => <MainLayout>{page}</MainLayout>}
-            />
+            <PropertyProvider>
+                <App
+                    {...props}
+                    layout={(page) => <MainLayout>{page}</MainLayout>}
+                />
+            </PropertyProvider>
         );
     },
     progress: {
         color: "#4B5563",
     },
 });
+

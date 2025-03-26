@@ -3,6 +3,7 @@ import landingpage from "../../../public/assets/landingpage3.jpg";
 import MainLayout from "@/Layouts/MainLayout";
 import Service from "../Components/AboutUs/Service";
 import Review from "../Components/AboutUs/Review";
+import Button from "@/Components/common/Button";
 
 const AboutUs = ({ reviews }) => {
     return (
@@ -33,11 +34,11 @@ const AboutUs = ({ reviews }) => {
                                         Visi untuk hunian strategis,
                                         berkelanjutan, & terjangkau
                                     </p>
-                                    <button className="mt-4 px-6 py-3 bg-lowokwaru text-white rounded-lg hover:bg-green-800 transition">
-                                        <Link href="/layanan/beli">
+                                    <Link href="/layanan/beli">
+                                        <Button variant="primary" className="mt-4">
                                             Mulai Jelajahi
-                                        </Link>
-                                    </button>
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -65,3 +66,4 @@ const AboutUs = ({ reviews }) => {
 
 AboutUs.layout = (page) => <MainLayout children={page} />;
 export default AboutUs;
+
