@@ -72,13 +72,8 @@ const Navbar = ({ auth }) => {
     };
 
     const closeModal = () => {
-        if (!form.processing) {
-            // Hanya tutup modal jika form tidak sedang diproses
-            console.log("Closing modal...");
-            setModalOpen(false);
-        } else {
-            console.log("Form is processing, modal will stay open.");
-        }
+        console.log("Closing modal...");
+        setModalOpen(false);
     };
 
     useEffect(() => {
@@ -205,7 +200,7 @@ const Navbar = ({ auth }) => {
                             <Modal
                                 show={isModalOpen}
                                 onClose={closeModal}
-                                title={"Edit Profile"}
+                                title="Edit Profile"
                             >
                                 <Profile auth={auth} onClose={closeModal} />
                             </Modal>

@@ -1,9 +1,5 @@
-import {
-    Dialog,
-    DialogPanel,
-    Transition,
-    TransitionChild,
-} from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
+import { useRef, useEffect, Fragment} from 'react';
 
 export default function Modal({
     children,
@@ -11,60 +7,78 @@ export default function Modal({
     show = false,
     onClose = () => {},
 }) {
-    const close = (event) => {
-        console.log("Modal close triggered", event.target);
-        if (event.target === event.currentTarget) {
-            console.log("Closing modal...");
-            onClose(); // Pastikan onClose dipanggil dengan benar
+    const modalRef = useRef(null);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                console.log("Click outside modal detected");
+                onClose();
+            }
         }
-    };
+
+        if (show) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [show, onClose]);
 
     return (
         <Transition show={show} leave="duration-0">
-            <Dialog
-                as="div"
-                className="fixed inset-0 z-50 flex transform items-center justify-center overflow-y-auto px-4 py-6 transition-all sm:px-0"
-                onClose={close} // Pastikan tidak ada penutupan jika klik di dalam
-            >
-                <TransitionChild
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div
-                        className="absolute inset-0 bg-gray-500/75"
-                        onClick={close}
-                    />
-                </TransitionChild>
+            <div className="fixed inset-0 z-50 overflow-y-auto">
+                <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                    <Transition.Child
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-500/75 transition-opacity" />
+                    </Transition.Child>
 
-                <TransitionChild
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    enterTo="opacity-100 translate-y-0 sm:scale-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                    leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                >
-                    <DialogPanel className="mb-6 transform overflow-hidden rounded-3xl bg-white shadow-xl transition-all sm:mx-auto sm:w-3/4">
-                        <div className="flex justify-between items-center p-4 border-b">
-                            <h2 className="text-lg font-bold">{title}</h2>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Menangguhkan event bubbling
-                                    onClose(); // Menutup modal
-                                }}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                &times; {/* Close button */}
-                            </button>
+                    <div className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:mx-auto sm:w-3/4 sm:align-middle">
+                        <div 
+                            ref={modalRef} 
+                            className="bg-white flex flex-col"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Header - Fixed at top */}
+                            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-white">
+                                <h3 className="text-xl font-semibold text-lowokwaru">
+                                    {title}
+                                </h3>
+                                <button
+                                    type="button"
+                                    className="text-gray-400 hover:text-gray-500 text-3xl font-bold"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onClose();
+                                    }}
+                                >
+                                    &times;
+                                </button>
+                            </div>
+
+                            {/* Scrollable content */}
+                            <div className="flex-1 overflow-y-auto px-6 py-4 max-h-[calc(90vh-80px)]">
+                                {children}
+                            </div>
                         </div>
-                        {children}
-                    </DialogPanel>
-                </TransitionChild>
-            </Dialog>
+                    </div>
+                </div>
+            </div>
         </Transition>
     );
 }
+
+
+
+
+
+
+
+
