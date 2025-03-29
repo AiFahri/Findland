@@ -31,28 +31,23 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
 
         if (!product) return [];
 
-        // Normalize image paths
         const normalizePath = (image) => {
             console.log("Processing image:", image);
 
             if (!image) return null;
 
-            // If image is already a full storage path, return as-is
             if (image.startsWith("/storage/")) {
                 console.log("Already storage path:", image);
                 return image;
             }
 
-            // Handle string paths
             if (typeof image === "string") {
-                // Remove leading slashes and ensure correct storage path
                 const cleanPath = image.replace(/^\/+/, "");
                 const fullPath = `/storage/${cleanPath}`;
                 console.log("Normalized path:", fullPath);
                 return fullPath;
             }
 
-            // If image is an object with path
             if (typeof image === "object" && image.path) {
                 const cleanPath = image.path.replace(/^\/+/, "");
                 const fullPath = `/storage/${cleanPath}`;
@@ -64,10 +59,8 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
             return null;
         };
 
-        // Process images from different possible sources
         let images = [];
 
-        // Parse JSON-encoded images
         try {
             if (product.images && typeof product.images === "string") {
                 const parsedImages = JSON.parse(
@@ -76,7 +69,6 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                 console.log("Parsed images:", parsedImages);
                 images = parsedImages
                     .map((img) => {
-                        // Remove quotes and leading slashes
                         const cleanImg = img
                             .replace(/^"|"$/g, "")
                             .replace(/^\/+/, "");
@@ -88,7 +80,6 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
             console.error("Error parsing images:", error);
         }
 
-        // Check land_listing images
         if (
             !images.length &&
             product.land_listing &&
@@ -100,7 +91,6 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                 .filter(Boolean);
         }
 
-        // Fallback to single image
         if (!images.length && product.image) {
             console.log("Single image:", product.image);
             const singleImage = normalizePath(product.image);
