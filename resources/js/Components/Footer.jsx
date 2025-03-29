@@ -4,22 +4,21 @@ import logophone from "../../assets/phone.svg";
 import logoemail from "../../assets/gmail.svg";
 import logofindland from "../../../public/assets/findland.svg";
 import dropdown from "../../assets/dropdown.svg";
-import { useState, useRef } from "react";
 import { Link } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
 import { FiMenu, FiX } from "react-icons/fi";
-import SearchBar from "./SearchBar";
+import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
 const socialLinks = [
-    { href: "tel:+62123456789", img: logophone, alt: "Phone" },
-    { href: "mailto:findland@email.com", img: logoemail, alt: "Email" },
+    { href: "https://wa.me/62123456789", img: logophone, alt: "Phone" },
+    { href: "mailto:findland.official@gmail.com", img: logoemail, alt: "Email" },
     {
-        href: "https://www.youtube.com/channel/yourchannel",
+        href: "https://www.youtube.com/channel/findland",
         img: logoyt,
         alt: "YouTube",
     },
     {
-        href: "https://www.instagram.com/fahrinuril_",
+        href: "https://www.instagram.com/findland",
         img: logoig,
         alt: "Instagram",
     },
@@ -51,117 +50,123 @@ const SocialLink = ({ href, img, alt }) => (
     </a>
 );
 
+const NavItem = ({ nav, isLayananOpen, layananRef, toggleLayanan }) => {
+    const { url } = usePage();
+    
+    if (nav.dropdown) {
+        return (
+            <div className="relative group p-4" ref={layananRef}>
+                <button
+                    onClick={toggleLayanan}
+                    className="flex items-center text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 cursor-pointer"
+                >
+                    {nav.label}
+                    <img src={dropdown} alt="Dropdown" className="w-4 h-4 ml-1 rotate-180" />
+                </button>
+                <div 
+                    className={`absolute z-50 left-0 bottom-full mb-2 w-40 bg-pandanwangi text-white rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${
+                        isLayananOpen 
+                            ? 'opacity-100 translate-y-0 visible' 
+                            : 'opacity-0 translate-y-2 invisible'
+                    }`}
+                >
+                    {nav.dropdown.map((item, subIndex) => (
+                        <Link
+                            key={subIndex}
+                            href={item.href}
+                            className="block px-4 py-2 text-white hover:bg-lowokwaru rounded-lg"
+                        >
+                            {item.label}
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="relative group p-4">
+            <Link
+                href={nav.href}
+                className={`text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 ${
+                    url === nav.href ? "text-bunulrejo" : ""
+                }`}
+            >
+                {nav.label}
+            </Link>
+        </div>
+    );
+};
+
 const Footer = () => {
     const { url } = usePage();
-    const [isLayananOpen, setIsLayananOpen] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const dropdownRef = useRef(null);
+    const { 
+        isOpen: isMenuOpen, 
+        toggle: toggleMenu 
+    } = useDropdownMenu();
+    const {
+        isOpen: isLayananOpen,
+        dropdownRef: layananRef,
+        toggle: toggleLayanan
+    } = useDropdownMenu();
 
-    const handleClickOutside = (event) => {
-        if (
-            dropdownRef.current &&
-            !dropdownRef.current.contains(event.target)
-        ) {
-            setIsLayananOpen(false);
-        }
-    };
-
-    const handleToggle = () => {
-        setIsLayananOpen((prev) => !prev);
-    };
     return (
-        <footer className="bg-[#0E372E] text-bunulrejo p-6 md:p-12 rounded-3xl">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-12">
-                <div className="text-center md:text-left space-y-4">
-                    <h1 className="text-4xl md:text-5xl font-medium leading-tight">
-                        Jual beli tanah <br />
-                        <span>terpercaya</span> <br />
-                        <span>findland</span>
+        <footer className="bg-[#0E372E] text-bunulrejo p-4 sm:p-6 md:p-12 rounded-3xl">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12">
+                <div className="text-center md:text-left space-y-3 md:space-y-4 w-full md:w-3/5">
+                    <h1 className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-medium leading-tight">
+                        Jual beli tanah
+                        <span className="block">terpercaya</span>
+                        <span className="block">findland</span>
                     </h1>
-                    <p className="text-md md:text-xl leading-relaxed">
-                        Dibuat untuk kenyamanan Anda <br />
-                        demi masa depan properti yang lebih <br />
-                        indah dan berkelanjutan
+                    <p className="font-light text-sm sm:text-lg md:text-lg lg:text-xl leading-relaxed px-2 sm:px-8 md:px-0 max-w-xl mx-auto md:mx-0">
+                        Dibuat untuk kenyamanan Anda
+                        <span className="block">demi masa depan properti yang</span>
+                        <span className="block">lebih indah dan berkelanjutan</span>
                     </p>
                 </div>
 
-                <div className="bg-[#184D42] p-6 rounded-2xl mt-6 md:mt-0 grid grid-cols-2 gap-4">
+                <div className="bg-[#184D42] p-4 sm:p-6 md:p-6 rounded-2xl mt-6 md:mt-0 grid grid-cols-2 gap-3 sm:gap-4">
                     {socialLinks.map((link, index) => (
                         <SocialLink key={index} {...link} />
                     ))}
                 </div>
             </div>
 
-            <div className="bg-[#153832] p-2  rounded-full mt-2 md:mt-0 flex items-center justify-between px-6 md:px-12 relative z-50">
+            <div className="bg-white/[0.03] p-2 rounded-full mt-2 lg:mt-0 flex items-center justify-between px-3 sm:px-6 md:px-8 lg:px-12 relative z-50">
                 <div className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                     <img
                         src={logofindland}
                         alt="Findland Logo"
-                        className="w-12 h-12"
+                        className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12"
                     />
-                    <span className="font-light font-sonsie text-md text-white">
+                    <span className="font-light font-sonsie text-sm sm:text-base lg:text-md text-white">
                         Findland
-                    </span>
-                </div>
+                    </span> 
+                </Link>
+                </div>      
                 <button
-                    className="md:hidden text-white"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="[@media(min-width:1024px)]:hidden text-white"
+                    onClick={toggleMenu}
                 >
                     {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
                 </button>
                 <nav
-                    className={`absolute md:static top-16 left-0 w-full md:w-auto bg-[#153832] md:flex md:gap-6 mt-0 md:mt-0 rounded-lg shadow-lg md:shadow-none transition-all ${
-                        isMenuOpen ? "block" : "hidden"
-                    }`}
+                    className={`absolute bottom-full left-0 right-0 mb-2 bg-white/[0.03] [@media(min-width:1024px)]:static [@media(min-width:1024px)]:flex [@media(min-width:1024px)]:gap-4 lg:gap-6 rounded-full shadow-lg [@media(min-width:1024px)]:shadow-none [@media(min-width:1024px)]:bg-transparent transform transition-all duration-300 ease-in-out ${
+                        isMenuOpen 
+                            ? 'opacity-100 -translate-y-2 visible' 
+                            : 'opacity-0 translate-y-2 invisible'
+                    } [@media(min-width:1024px)]:opacity-100 [@media(min-width:1024px)]:visible [@media(min-width:1024px)]:translate-y-0`}
                 >
                     {navLinks.map((nav, index) => (
-                        <div
+                        <NavItem
                             key={index}
-                            className="relative group p-4 md:p-4"
-                            ref={dropdownRef}
-                        >
-                            {nav.dropdown ? (
-                                <button
-                                    onClick={handleToggle}
-                                    className="flex items-center text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 cursor-pointer"
-                                >
-                                    {nav.label}{" "}
-                                    <img
-                                        src={dropdown}
-                                        alt="Dropdown"
-                                        className="w-4 h-4 ml-1"
-                                    />
-                                </button>
-                            ) : (
-                                <Link
-                                    href={nav.href}
-                                    className={`text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 ${
-                                        url === nav.href
-                                            ? "text-bunulrejo"
-                                            : "text-bunulrejo"
-                                    }`}
-                                >
-                                    {nav.label}
-                                </Link>
-                            )}
-                            {nav.dropdown && isLayananOpen && (
-                                <div
-                                    className="absolute z-50 left-0 mt-2 w-40 bg-pandanwangi text-white rounded-lg shadow-lg"
-                                    onBlur={handleClickOutside}
-                                    tabIndex={0}
-                                >
-                                    {nav.dropdown.map((item, subIndex) => (
-                                        <Link
-                                            key={subIndex}
-                                            href={item.href}
-                                            className="block px-4 py-2 text-white hover:bg-lowokwaru rounded-lg"
-                                        >
-                                            {item.label}
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                            nav={nav}
+                            isLayananOpen={isLayananOpen}
+                            layananRef={layananRef}
+                            toggleLayanan={toggleLayanan}
+                        />
                     ))}
                 </nav>
             </div>

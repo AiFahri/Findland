@@ -1,4 +1,3 @@
-import { useState, useRef, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { Link, usePage } from "@inertiajs/react";
 import logofindland from "../../../public/assets/findland.svg";
@@ -8,7 +7,6 @@ import LogoutIcon from "../../assets/logout.svg";
 import ProfileIcon from "../../assets/profile.svg";
 import Profile from "@/Pages/Profile/Profile";
 import Modal from "@/Components/Modal";
-import { useAuth } from '@/hooks/useAuth';
 import { useDropdownMenu } from '@/hooks/useDropdownMenu';
 import { useModal } from '@/hooks/useModal';
 
