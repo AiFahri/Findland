@@ -23,11 +23,11 @@ const SearchBar = ({
     }, []);
 
     return (
-        <div className={`flex items-center w-full md:w-auto ${className}`}>
+        <div className={`flex items-center w-full ${className}`}>
             <input
                 ref={inputRef}
                 type="text"
-                className="w-full md:w-56 outline-none rounded-3xl bg-[#153832] text-white px-4 py-2"
+                className="w-full outline-none rounded-3xl bg-[#153832] text-white px-4 py-2"
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
