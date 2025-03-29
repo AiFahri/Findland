@@ -163,14 +163,14 @@ const Review = ({ reviews }) => {
                                             {review.user.last_name}
                                         </h4>
                                         <div className="flex justify-end gap-1">
-                                          {[...Array(5)].map((_, i) => (
-                                                <img
-                                                    key={i}
-                                                    src={i < review.rating ? starFilled : starEmpty}
-                                                    alt="star"
-                                                    className="w-2 h-4"
-                                                />
-                                            ))}
+                                        {[...Array(review.rating)].map((_, i) => (
+                    <img
+                        key={i}
+                        src={starFilled}
+                        alt="star"
+                        className="w-2 h-2"
+                    />
+                ))}
                                            
                                         </div>
                                     </div>
