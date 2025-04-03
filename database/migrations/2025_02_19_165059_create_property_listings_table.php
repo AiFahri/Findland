@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('image');
             $table->json('images')->nullable();
+            $table->string('title');
             $table->string('status');
             $table->decimal('price', 15, 2);
             $table->text('description');
