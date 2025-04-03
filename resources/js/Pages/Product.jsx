@@ -159,14 +159,16 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                             spaceBetween={10}
                             slidesPerView={1.25}
                             centeredSlides={false}
-                            navigation={false}
+                            navigation={true}
                             pagination={{
                                 clickable: true,
                             }}
                             onSlideChange={(swiper) =>
                                 setCurrentImageIndex(swiper.activeIndex)
                             }
-                            className="w-full h-full"
+                            observer={true}
+                            observeParents={true}
+                            className="w-full h-full swiper-custom-navigation"
                         >
                             {normalizeImages(selectedProduct).map(
                                 (image, index) => (
@@ -250,12 +252,12 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                 </section>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-8 mb-8 px-1">
                 {propertyData.map((product, index) => (
                     <div
                         key={index}
                         onClick={() => handleProductSelect(product)}
-                        className="cursor-pointer hover:scale-105 transition-transform"
+                        className="cursor-pointer hover:scale-105 transition-transform pb-1 pt-1"
                     >
                         <Card
                             image={
@@ -264,6 +266,7 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                                     : product.land_listing?.images?.[0] ||
                                       product.image
                             }
+                            title={product.title}
                             status={product.status}
                             price={formatRupiah(product.price)}
                             description={truncateText(product.description, 50)}

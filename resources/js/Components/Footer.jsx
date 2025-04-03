@@ -142,7 +142,7 @@ const Footer = () => {
                         className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12"
                     />
                     <span className="font-light font-sonsie text-sm sm:text-base lg:text-md text-white">
-                        Findland
+                        Findland Official
                     </span> 
                 </Link>
                 </div>      

@@ -7,7 +7,7 @@ const Button = ({
     customColors,
     ...props 
 }) => {
-    const baseStyle = "px-4 rounded-xl font-medium transition-colors";
+    const baseStyle = "px-5 py-2 rounded-xl font-medium transition-colors";
     
     const variants = {
         primary: "bg-lowokwaru text-white hover:bg-opacity-90",

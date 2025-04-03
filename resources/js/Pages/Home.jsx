@@ -13,7 +13,7 @@ import { useProperty } from "@/hooks/useProperty";
 import { PropertyProvider } from "@/contexts/PropertyContext";
 import findlandputih from "../../../public/assets/findland_white.svg";
 
-const PropertySection = ({ title, properties, viewAllLink, isSlider = false }) => {
+const PropertySection = ({ properties, isSlider = false }) => {
     const { formatPropertiesList } = useProperty();
     const formattedProperties = formatPropertiesList(properties);
 
@@ -23,17 +23,23 @@ const PropertySection = ({ title, properties, viewAllLink, isSlider = false }) =
                 modules={[Navigation, Pagination, A11y]}
                 spaceBetween={20}
                 slidesPerView={3}
-                navigation
+                navigation={true}
                 pagination={{ clickable: true }}
+                className="pb-12 px-8 swiper-custom-navigation"
+                loop={false}
+                observer={true}
+                observeParents={true}
                 breakpoints={{
-                    0: { slidesPerView: 1, spaceBetween: 10 },
+                    0: { slidesPerView: 2, spaceBetween: 10 },
                     640: { slidesPerView: 2, spaceBetween: 20 },
                     1024: { slidesPerView: 3, spaceBetween: 30 },
                 }}
             >
                 {formattedProperties.map((property) => (
-                    <SwiperSlide key={property.id}>
-                        <PropertyCard property={property} />
+                    <SwiperSlide key={property.id} className="pb-3">
+                        <div className="h-full">
+                            <PropertyCard property={property} />
+                        </div>
                     </SwiperSlide>
                 ))}
             </Swiper>
@@ -41,9 +47,11 @@ const PropertySection = ({ title, properties, viewAllLink, isSlider = false }) =
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 px-1">
             {formattedProperties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
+                <div key={property.id} className="pb-1 pt-1">
+                    <PropertyCard property={property} />
+                </div>
             ))}
         </div>
     );
@@ -57,6 +65,7 @@ const PropertyCard = ({ property }) => (
     >
         <Card
             image={property.image}
+            title={property.title}
             status={property.status}
             price={property.formattedPrice}
             description={property.shortDescription}
@@ -66,10 +75,11 @@ const PropertyCard = ({ property }) => (
 );
 
 const Home = ({ latestProperties, featuredProperties }) => {
+    console.log("Featured Properties:", featuredProperties);
     return (
         <PropertyProvider>
             <Head title="FindLand - Temukan Properti Impian Anda" />
-            
+
             <div className="relative w-full mt-4">
                 <img
                     src="/assets/landingpage.jpg"
@@ -104,15 +114,23 @@ const Home = ({ latestProperties, featuredProperties }) => {
                         Lihat Semua
                     </Link>
                 </div>
-                <PropertySection properties={latestProperties} />
+                <PropertySection
+                    key="latest-slider"
+                    properties={latestProperties}
+                    isSlider
+                />
             </section>
 
             <section className="my-6">
                 <h1 className="text-2xl md:text-4xl font-extrabold text-lowokwaru mb-6">
                     Properti Pilihan
                 </h1>
-                {featuredProperties.length > 0 ? (
-                    <PropertySection properties={featuredProperties} isSlider />
+                {featuredProperties && featuredProperties.length > 0 ? (
+                    <PropertySection
+                        key="featured-slider"
+                        properties={featuredProperties}
+                        isSlider
+                    />
                 ) : (
                     <p className="text-gray-500 text-center">
                         Tidak ada properti pilihan saat ini
@@ -127,7 +145,10 @@ const Home = ({ latestProperties, featuredProperties }) => {
                         <h1>dan cepat hanya di</h1>
                         <h1>findland</h1>
                     </div>
-                    <Button customColors="bg-blue-600 text-white " className="self-end ">
+                    <Button
+                        customColors="bg-blue-600 text-white "
+                        className="self-end "
+                    >
                         <Link href="/layanan/jual">Jual Sekarang</Link>
                     </Button>
                 </div>
