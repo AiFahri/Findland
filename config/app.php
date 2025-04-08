@@ -168,6 +168,7 @@ return [
         // App\Providers\EventServiceProvider::class, // Commented out because it doesn't exist
         // App\Providers\RouteServiceProvider::class, // Commented out because it doesn't exist
         App\Providers\CurlServiceProvider::class,
+        App\Providers\SocialiteServiceProvider::class,
     ],
 
 ];
