@@ -13,27 +13,6 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [PropertyListingController::class, 'getHomeProperties'])->name('home');
-
-// Debug routes
-Route::prefix('debug')->group(function () {
-    // Debug route untuk memeriksa status autentikasi
-    Route::get('/auth', function () {
-        return response()->json([
-            'is_logged_in' => Auth::check(),
-            'user'         => Auth::check() ? Auth::user() : null,
-            'session'      => session()->all(),
-        ]);
-    });
-
-    // Debug route untuk memeriksa database users
-    Route::get('/users', function () {
-        return response()->json([
-            'count' => \App\Models\User::count(),
-            'users' => \App\Models\User::all(['id', 'first_name', 'last_name', 'email', 'google_id', 'is_google_account', 'created_at'])->toArray(),
-        ]);
-    });
-});
-
 Route::get('/tentangkami', function () {
     return Inertia::render('AboutsUs', [
         'reviews' => \App\Models\Review::with('user')->latest()->get(),
