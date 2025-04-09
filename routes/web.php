@@ -1,24 +1,21 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\LandListingController;
-use App\Http\Controllers\PropertyListingController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PropertyController;
+use App\Http\Controllers\LandListingController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PropertyListingController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Middleware\AdminAuthenticate;
-
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', [PropertyListingController::class, 'getHomeProperties'])->name('home');
-
 Route::get('/tentangkami', function () {
     return Inertia::render('AboutsUs', [
-        'reviews' => \App\Models\Review::with('user')->latest()->get()
+        'reviews' => \App\Models\Review::with('user')->latest()->get(),
     ]);
 })->name('AboutsUs');
 Route::get('/layanan/beli', [PropertyListingController::class, 'index'])
@@ -44,10 +41,9 @@ Route::middleware(['auth'])->group(function () {
     // Route::middleware(['admin'])->group(function () {
     //     Route::patch('/jual-lahan/{id}/approve', [LandListingController::class, 'approve'])->name('land.approve');
     //     Route::patch('/jual-lahan/{id}/reject', [LandListingController::class, 'reject'])->name('land.reject');
-    
+
     // });
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -55,7 +51,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/profile/update-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.update.picture');
-  
 
 });
 
@@ -66,7 +61,7 @@ Route::prefix('admin')->group(function () {
 
     // Route::middleware('auth:admin')->group(function () {
     //     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-        
+
     //     // Property Management Routes
     //     Route::get('/properties/total', [PropertyController::class, 'totalListings'])
     //     ->name('admin.properties.total');
@@ -78,11 +73,11 @@ Route::prefix('admin')->group(function () {
     //     ->name('admin.properties.approve');
     //     Route::get('/properties/active', [DashboardController::class, 'getActiveProperties'])
     //         ->name('admin.properties.active');
-        
+
     // });
     Route::middleware([AdminAuthenticate::class])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-        
+
         // Property Routes
         Route::get('/properties/total', [PropertyController::class, 'totalListings'])
             ->name('admin.properties.total');
@@ -95,4 +90,4 @@ Route::prefix('admin')->group(function () {
     });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

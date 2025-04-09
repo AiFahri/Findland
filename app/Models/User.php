@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -24,6 +23,10 @@ class User extends Authenticatable
         'address',
         'password',
         'profile_picture',
+        'google_id',
+        'is_google_account',
+        'avatar',
+        'email_verified_at',
     ];
 
     /**
@@ -31,7 +34,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $hidden = [
+    protected $_hidden = [
         'password',
         'remember_token',
     ];
@@ -45,7 +48,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
@@ -58,10 +61,21 @@ class User extends Authenticatable
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
     public function getProfilePictureUrlAttribute()
-{
-    return $this->profile_picture
+    {
+        return $this->profile_picture
         ? asset('storage/' . $this->profile_picture)
         : 'https://i.pravatar.cc/150?u=' . $this->id; // Default avatar dari pravatar
-}
+    }
+
+    /**
+     * Get the fillable attributes for the model.
+     *
+     * @return array
+     */
+    public function getFillable()
+    {
+        return $this->fillable;
+    }
 }
