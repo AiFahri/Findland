@@ -10,20 +10,23 @@ class LandListing extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'full_name', 'birth_place_date', 'address', 
-        'ktp_id', 'religion', 'phone_number', 
-        'npwp', 'ktp_scan', 'package_id', 'land_photos', 'admin_status'
+        'user_id', 'full_name', 'birth_place_date', 'address',
+        'ktp_id', 'religion', 'phone_number',
+        'npwp', 'ktp_scan', 'package_id', 'land_photos', 'admin_status',
+        'is_paid', 'expiry_date'
     ];
 
     protected $casts = [
         'land_photos' => 'array',
-        'package_id' => 'integer'
+        'package_id' => 'integer',
+        'is_paid' => 'boolean',
+        'expiry_date' => 'datetime'
     ];
 
     public function setLandPhotosAttribute($value)
     {
-        $this->attributes['land_photos'] = is_array($value) 
-            ? json_encode($value) 
+        $this->attributes['land_photos'] = is_array($value)
+            ? json_encode($value)
             : ($value ?? json_encode([]));
     }
 
@@ -44,5 +47,15 @@ class LandListing extends Model
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function latestPayment()
+    {
+        return $this->hasOne(Payment::class)->latest();
     }
 }
