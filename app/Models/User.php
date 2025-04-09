@@ -93,4 +93,20 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->fillable;
     }
+
+    /**
+     * Get the land listings for the user.
+     */
+    public function landListings()
+    {
+        return $this->hasMany(LandListing::class);
+    }
+
+    /**
+     * Get the payments for the user.
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }
