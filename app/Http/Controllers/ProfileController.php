@@ -19,23 +19,66 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'address' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:6|confirmed',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Jika ada password baru, update password
-        if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
+        try {
+            // Jika ada password baru, update password
+            if ($request->filled('password')) {
+                $user->password = bcrypt($request->password);
+            }
+
+            // Jika ada file foto profil baru
+            if ($request->hasFile('profile_picture')) {
+                // Log untuk debugging
+                \Illuminate\Support\Facades\Log::info('Processing profile picture upload', [
+                    'original_name' => $request->file('profile_picture')->getClientOriginalName(),
+                    'mime_type' => $request->file('profile_picture')->getMimeType(),
+                    'size' => $request->file('profile_picture')->getSize(),
+                ]);
+
+                // Hapus foto lama jika ada
+                if ($user->profile_picture) {
+                    \Illuminate\Support\Facades\Storage::delete('public/' . $user->profile_picture);
+                }
+
+                try {
+                    // Simpan foto baru dengan nama file yang lebih pendek
+                    $extension = $request->file('profile_picture')->getClientOriginalExtension();
+                    $filename = 'user_' . $user->id . '_' . time() . '.' . $extension;
+                    $path = $request->file('profile_picture')->storeAs('profile_pictures', $filename, 'public');
+
+                    // Verifikasi file berhasil disimpan
+                    if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                        $user->profile_picture = $path;
+                        \Illuminate\Support\Facades\Log::info('Profile picture saved successfully', ['path' => $path]);
+                    } else {
+                        \Illuminate\Support\Facades\Log::error('Failed to save profile picture', ['path' => $path]);
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Error saving profile picture: ' . $e->getMessage());
+                }
+            }
+
+            // Update data lainnya
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->email = $request->email;
+            $user->address = $request->address;
+            $user->save();
+
+            return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error updating profile: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memperbarui profil. Silakan coba lagi.');
         }
-
-        $user->update($request->except('password'));
-
-        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     }
 
     public function updateProfilePicture(Request $request)
@@ -46,22 +89,28 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        // Hapus foto lama jika ada
-        if ($user->profile_picture) {
-            Storage::delete('public/' . $user->profile_picture);
+        try {
+            // Hapus foto lama jika ada
+            if ($user->profile_picture) {
+                Storage::delete('public/' . $user->profile_picture);
+            }
+
+            // Simpan foto baru
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $user->update(['profile_picture' => $path]);
+
+            return redirect()->back()->with('success', 'Foto profil berhasil diperbarui!');
+        } catch (\Exception $e) {
+            // Log error
+            \Illuminate\Support\Facades\Log::error('Error updating profile picture: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupload foto profil. Silakan coba lagi.');
         }
-
-        // Simpan foto baru
-        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-        $user->update(['profile_picture' => $path]);
-
-        return redirect()->back()->with('success', 'Foto profil berhasil diperbarui!');
     }
 
     public function destroy(Request $request)
     {
         $user = Auth::user();
-        
+
         // Hapus akun pengguna
         $user->delete();
 

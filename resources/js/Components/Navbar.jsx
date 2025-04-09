@@ -7,8 +7,8 @@ import LogoutIcon from "../../assets/logout.svg";
 import ProfileIcon from "../../assets/profile.svg";
 import Profile from "@/Pages/Profile/Profile";
 import Modal from "@/Components/Modal";
-import { useDropdownMenu } from '@/hooks/useDropdownMenu';
-import { useModal } from '@/hooks/useModal';
+import { useDropdownMenu } from "@/hooks/useDropdownMenu";
+import { useModal } from "@/hooks/useModal";
 
 const navLinks = [
     { href: "/", label: "Beranda" },
@@ -27,7 +27,7 @@ const navLinks = [
 
 const NavItem = ({ nav, isLayananOpen, layananRef, toggleLayanan }) => {
     const { url } = usePage();
-    
+
     if (nav.dropdown) {
         return (
             <div className="relative group p-4" ref={layananRef}>
@@ -36,13 +36,17 @@ const NavItem = ({ nav, isLayananOpen, layananRef, toggleLayanan }) => {
                     className="flex items-center text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 cursor-pointer"
                 >
                     {nav.label}
-                    <img src={dropdown} alt="Dropdown" className="w-4 h-4 ml-1" />
+                    <img
+                        src={dropdown}
+                        alt="Dropdown"
+                        className="w-4 h-4 ml-1"
+                    />
                 </button>
-                <div 
+                <div
                     className={`absolute z-50 left-0 mt-2 w-40 bg-pandanwangi text-white rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${
-                        isLayananOpen 
-                            ? 'opacity-100 translate-y-0 visible' 
-                            : 'opacity-0 -translate-y-2 invisible'
+                        isLayananOpen
+                            ? "opacity-100 translate-y-0 visible"
+                            : "opacity-0 -translate-y-2 invisible"
                     }`}
                 >
                     {nav.dropdown.map((item, subIndex) => (
@@ -73,13 +77,26 @@ const NavItem = ({ nav, isLayananOpen, layananRef, toggleLayanan }) => {
     );
 };
 
-const UserMenu = ({ auth, showDropdown, profileRef, toggleDropdown, isModalOpen, openModal, closeModal, isMobile = false }) => {
+const UserMenu = ({
+    auth,
+    showDropdown,
+    profileRef,
+    toggleDropdown,
+    isModalOpen,
+    openModal,
+    closeModal,
+    isMobile = false,
+}) => {
     const { buttonRef } = useDropdownMenu();
 
     if (!auth.user) {
         return (
             <Link href="/login">
-                <button className={`${isMobile ? 'w-full' : 'flex'} bg-[#0074E8] rounded-full p-2 px-8 items-center justify-center font-bold text-white`}>
+                <button
+                    className={`${
+                        isMobile ? "w-full" : "flex"
+                    } bg-[#0074E8] rounded-full p-2 px-8 items-center justify-center font-bold text-white`}
+                >
                     Sign In
                 </button>
             </Link>
@@ -87,33 +104,44 @@ const UserMenu = ({ auth, showDropdown, profileRef, toggleDropdown, isModalOpen,
     }
 
     return (
-        <div className={`relative ${isMobile && !showDropdown ? 'h-fit' : ''}`}>
-            <div className={`${isMobile ? 'w-full' : ''}`}>
+        <div className={`relative ${isMobile && !showDropdown ? "h-fit" : ""}`}>
+            <div className={`${isMobile ? "w-full" : ""}`}>
                 <button
                     ref={buttonRef}
                     onClick={toggleDropdown}
-                    className={`flex items-center gap-3 ${isMobile ? 'w-full' : ''} border border-gray-200 rounded-lg px-3 py-1.5 hover:text-lowokwaru`}
+                    className={`flex items-center gap-3 ${
+                        isMobile ? "w-full" : ""
+                    } border border-gray-200 rounded-lg px-3 py-1.5 hover:text-lowokwaru`}
                 >
                     <span className="text-white">
                         {auth.user.first_name} {auth.user.last_name}
                     </span>
                     <div className="w-8 h-8 rounded-full overflow-hidden ml-auto">
                         <img
-                            src={auth.user.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user.first_name + " " + auth.user.last_name)}`}
+                            src={
+                                auth.user.profile_picture_url ||
+                                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                    auth.user.first_name +
+                                        " " +
+                                        auth.user.last_name
+                                )}&background=fff&color=153832`
+                            }
                             alt="Profile"
                             className="w-full h-full object-cover"
                         />
                     </div>
                 </button>
             </div>
-            <div 
+            <div
                 ref={profileRef}
                 className={`${
-                    isMobile ? 'w-full mt-2' : 'absolute right-0 top-full mt-2 min-w-full'
+                    isMobile
+                        ? "w-full mt-2"
+                        : "absolute right-0 top-full mt-2 min-w-full"
                 } bg-white rounded-lg shadow-lg border border-gray-100 py-1 transform transition-all duration-300 ease-in-out ${
-                    showDropdown 
-                        ? 'opacity-100 translate-y-0 visible' 
-                        : 'opacity-0 -translate-y-2 invisible h-0 overflow-hidden'
+                    showDropdown
+                        ? "opacity-100 translate-y-0 visible"
+                        : "opacity-0 -translate-y-2 invisible h-0 overflow-hidden"
                 }`}
             >
                 <button
@@ -137,27 +165,34 @@ const UserMenu = ({ auth, showDropdown, profileRef, toggleDropdown, isModalOpen,
     );
 };
 
-
 const Navbar = ({ auth }) => {
     const { isOpen: isMenuOpen, toggle: toggleMenu } = useDropdownMenu();
-    const { 
-        isOpen: isLayananOpen, 
-        dropdownRef: layananRef, 
-        toggle: toggleLayanan 
+    const {
+        isOpen: isLayananOpen,
+        dropdownRef: layananRef,
+        toggle: toggleLayanan,
     } = useDropdownMenu();
     const {
         isOpen: showDropdown,
         dropdownRef: profileRef,
-        toggle: toggleDropdown
+        toggle: toggleDropdown,
     } = useDropdownMenu();
-    const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
+    const {
+        isOpen: isModalOpen,
+        open: openModal,
+        close: closeModal,
+    } = useModal();
 
     return (
         <>
             <div className="bg-[#153832] p-2 rounded-full mt-2 lg:mt-0 flex items-center justify-between px-4 sm:px-6 lg:px-12 relative z-50">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 flex-shrink-0">
                     <Link href="/" className="flex items-center gap-2">
-                        <img src={logofindland} alt="Findland Logo" className="w-full h-full" />
+                        <img
+                            src={logofindland}
+                            alt="Findland Logo"
+                            className="w-full h-full"
+                        />
                     </Link>
                 </div>
 
@@ -165,7 +200,10 @@ const Navbar = ({ auth }) => {
                     <SearchBar />
                 </div>
 
-                <button className="w-10 h-10 flex-shrink-0 [@media(min-width:1024px)]:hidden text-white flex items-center justify-center" onClick={toggleMenu}>
+                <button
+                    className="w-10 h-10 flex-shrink-0 [@media(min-width:1024px)]:hidden text-white flex items-center justify-center"
+                    onClick={toggleMenu}
+                >
                     {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
                 </button>
 
@@ -197,11 +235,11 @@ const Navbar = ({ auth }) => {
                     </div>
                 </div>
 
-                <div 
+                <div
                     className={`absolute top-full left-0 right-0 mt-2 bg-[#153832] rounded-lg shadow-lg [@media(min-width:1024px)]:hidden transform transition-all duration-300 ease-in-out ${
-                        isMenuOpen 
-                            ? 'opacity-100 translate-y-0 visible' 
-                            : 'opacity-0 -translate-y-4 invisible'
+                        isMenuOpen
+                            ? "opacity-100 translate-y-0 visible"
+                            : "opacity-0 -translate-y-4 invisible"
                     }`}
                 >
                     <nav className="py-2">
@@ -229,7 +267,7 @@ const Navbar = ({ auth }) => {
                     </nav>
                 </div>
             </div>
-            
+
             <Modal show={isModalOpen} onClose={closeModal} title="Edit Profile">
                 <Profile auth={auth} onClose={closeModal} />
             </Modal>
