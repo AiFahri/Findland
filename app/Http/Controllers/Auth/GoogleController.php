@@ -43,11 +43,16 @@ class GoogleController extends Controller
         try {
             Log::info('Google callback started');
 
-            // Get the Google user
-            // Our SocialiteServiceProvider will handle disabling SSL verification
             $googleUser = Socialite::driver('google')->stateless()->user();
             Log::info('Google user retrieved', ['email' => $googleUser->email, 'name' => $googleUser->name]);
             Log::debug('Google user object', ['user' => json_encode($googleUser)]);
+
+            // Log email verification status from Google
+            $emailVerified = isset($googleUser->user['email_verified']) ? $googleUser->user['email_verified'] : false;
+            Log::info('Google email verification status', [
+                'email' => $googleUser->email,
+                'verified' => $emailVerified
+            ]);
 
             if (empty($googleUser->email)) {
                 Log::error('Google user email is empty');
@@ -64,6 +69,23 @@ class GoogleController extends Controller
 
             Auth::login($user, true);
             Log::info('User logged in', ['id' => $user->id, 'email' => $user->email]);
+
+            $emailVerified = isset($googleUser->user['email_verified']) ? $googleUser->user['email_verified'] : false;
+            Log::info('Checking email verification status', [
+                'email' => $user->email,
+                'has_verified_email' => $user->hasVerifiedEmail(),
+                'google_verified' => $emailVerified
+            ]);
+
+            if (!$user->hasVerifiedEmail()) {
+                if ($user->is_google_account && $emailVerified) {
+                    $user->markEmailAsVerified();
+                    Log::info('Email marked as verified for Google user', ['email' => $user->email]);
+                } else {
+                    Log::info('Redirecting to verification notice', ['email' => $user->email]);
+                    return redirect(route('verification.notice'));
+                }
+            }
 
             return redirect('/');
 
@@ -96,11 +118,17 @@ class GoogleController extends Controller
 
             if ($user) {
                 Log::info('User found by email, updating google_id', ['id' => $user->id]);
+                // Update user dengan data Google
                 $user->update([
                     'google_id' => $googleUser->id,
                     'is_google_account' => true,
                     'avatar' => $googleUser->avatar,
                 ]);
+
+                // Jika user belum punya profile_picture, gunakan avatar dari Google
+                if (!$user->profile_picture && $googleUser->avatar) {
+                    $user->update(['profile_picture' => $this->saveGoogleAvatar($googleUser->avatar, $user->id)]);
+                }
                 return $user;
             }
 
@@ -110,6 +138,12 @@ class GoogleController extends Controller
             $firstName = $nameParts[0];
             $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
 
+            // Simpan avatar Google jika ada
+            $profilePicture = null;
+            if ($googleUser->avatar) {
+                $profilePicture = $this->saveGoogleAvatar($googleUser->avatar, 'new_user_' . time());
+            }
+
             $userData = [
                 'first_name' => $firstName,
                 'last_name' => $lastName,
@@ -117,9 +151,10 @@ class GoogleController extends Controller
                 'google_id' => $googleUser->id,
                 'is_google_account' => true,
                 'avatar' => $googleUser->avatar,
+                'profile_picture' => $profilePicture,
                 'password' => Hash::make(Str::random(16)),
-                'email_verified_at' => now(),
-                'address' => null, // Explicitly set address to null (now that it's nullable)
+                'email_verified_at' => null,
+                'address' => null,
             ];
 
             Log::info('Attempting to create user with data', ['userData' => $userData]);
@@ -129,6 +164,9 @@ class GoogleController extends Controller
 
             if ($user && $user->exists) {
                 Log::info('New user created successfully', ['id' => $user->id]);
+
+                Log::info('New user created', ['email' => $user->email]);
+
                 return $user;
             } else {
                 Log::error('Failed to create user');
@@ -138,6 +176,27 @@ class GoogleController extends Controller
         } catch (Exception $e) {
             Log::error('Error finding or creating user: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
+            return null;
+        }
+    }
+
+    /**
+     * Save Google avatar to storage and return the path.
+     *
+     * @param string $avatarUrl
+     * @param string|int $userId
+     * @return string|null
+     */
+    protected function saveGoogleAvatar($avatarUrl, $userId)
+    {
+        try {
+            Log::info('Attempting to save Google avatar', ['url' => $avatarUrl]);
+
+            // Gunakan avatar langsung dari Google tanpa menyimpan ke storage lokal
+            // Ini menghindari masalah permission dan file system
+            return null; // Kembalikan null agar sistem menggunakan avatar dari Google langsung
+        } catch (\Exception $e) {
+            Log::error('Error handling Google avatar: ' . $e->getMessage());
             return null;
         }
     }
