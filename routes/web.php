@@ -4,9 +4,12 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\LandListingController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\DirectPaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyListingController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SnapTokenController;
 use App\Http\Middleware\AdminAuthenticate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +41,14 @@ Route::get('/faq', function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/jual-lahan', [LandListingController::class, 'store'])->name('land.store');
     Route::get('/jual-lahan', [LandListingController::class, 'create'])->name('land.create');
+
+    // Payment routes
+    Route::get('/payments/process/{landListing}', [DirectPaymentController::class, 'showPaymentPage'])->name('payments.process');
+    Route::get('/payments/finish', [PaymentController::class, 'finish'])->name('payments.finish');
+    Route::get('/payments/unfinish', [PaymentController::class, 'unfinish'])->name('payments.unfinish');
+    Route::get('/payments/error', [PaymentController::class, 'error'])->name('payments.error');
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
 
     // // Admin approval routes
     // Route::middleware(['admin'])->group(function () {
@@ -93,5 +104,12 @@ Route::prefix('admin')->group(function () {
             ->name('admin.properties.upload-image');
     });
 });
+
+// Midtrans Webhook (tidak perlu CSRF protection)
+Route::post('/payments/webhook', [PaymentController::class, 'webhook'])->name('payments.webhook');
+// API untuk update status pembayaran dari frontend
+Route::post('/api/payments/update-status', [DirectPaymentController::class, 'updatePaymentStatus'])->name('api.payments.update-status');
+// API untuk mendapatkan Snap Token dari Midtrans
+Route::post('/api/payments/get-snap-token', [SnapTokenController::class, 'getSnapToken'])->name('api.payments.get-snap-token');
 
 require __DIR__ . '/auth.php';

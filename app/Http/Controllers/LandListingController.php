@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LandListing;
 use App\Models\LandListingImage;
+use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@ class LandListingController extends Controller
             'request_data' => $request->all(),
             'files' => $request->allFiles()
         ]);
-    
+
         try {
             $validatedData = $request->validate([
                 'package_id' => 'nullable|in:1,2,3,4',
@@ -56,18 +57,18 @@ class LandListingController extends Controller
                 'land_photos' => 'required|array|min:4|max:4',
                 'land_photos.*' => 'image|mimes:jpeg,png,jpg|max:2048'
             ]);
-    
+
             DB::beginTransaction();
-    
+
             $ktpPath = $request->file('ktp_scan')->store('ktp_scans', 'public');
             Log::info('KTP Scan Path', ['path' => $ktpPath]);
-    
+
             $photoPaths = [];
             foreach ($request->file('land_photos') as $photo) {
                 $path = $photo->store('land_photos', 'public');
                 $photoPaths[] = $path;
             }
-    
+
             // Create Land Listing
             $landListing = LandListing::create([
                 'user_id' => Auth::id(),
@@ -81,36 +82,43 @@ class LandListingController extends Controller
                 'npwp' => $validatedData['npwp'],
                 'ktp_scan' => $ktpPath,
                 'package_id' => $request->input('package_id'),
-                'land_photos' => $photoPaths, 
+                'land_photos' => $photoPaths,
                 'admin_status' => 'pending'
             ]);
             Log::info('Land Listing Created', ['id' => $landListing->id]);
-    
+
             foreach ($photoPaths as $path) {
                 LandListingImage::create([
                     'land_listing_id' => $landListing->id,
                     'path' => $path
                 ]);
             }
-    
+
             DB::commit();
-    
-            return redirect()->route('home')->with('success', 'Pengajuan lahan Anda berhasil dikirim. Silakan tunggu konfirmasi admin.');
+
+            // Log untuk debugging
+            Log::info('Redirecting to payment page', [
+                'land_listing_id' => $landListing->id,
+                'route' => route('payments.process', $landListing->id)
+            ]);
+
+            // Redirect ke halaman pembayaran
+            return redirect()->route('payments.process', $landListing->id);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Land Listing Submission Error', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-    
+
             if (isset($ktpPath)) {
                 Storage::disk('public')->delete($ktpPath);
             }
             foreach ($photoPaths ?? [] as $path) {
                 Storage::disk('public')->delete($path);
             }
-    
+
             return back()->withErrors(['submission' => 'Gagal mengirim pengajuan: ' . $e->getMessage()]);
         }
     }
