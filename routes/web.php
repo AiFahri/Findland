@@ -25,9 +25,11 @@ Route::get('/layanan/beli', [PropertyListingController::class, 'index'])
 Route::get('/layanan/sewa', [PropertyListingController::class, 'index'])
     ->defaults('status', 'Disewa')
     ->name('layanan.sewa');
-Route::get('/layanan/jual', function () {
-    return Inertia::render('Pricing');
-})->name('layanan.jual');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/layanan/jual', function () {
+        return Inertia::render('Pricing');
+    })->name('layanan.jual');
+});
 Route::get('/layanan/properti/{id}', [PropertyListingController::class, 'show'])->name('properties.show');
 
 Route::get('/faq', function () {
@@ -45,9 +47,9 @@ Route::middleware(['auth'])->group(function () {
     // });
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Ubah dari patch ke post
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/profile/update-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.update.picture');
