@@ -10,24 +10,30 @@ class PropertyListing extends Model
     use HasFactory;
 
     protected $fillable = [
-        'land_listing_id', 
-        'user_id', 
-        'title', 
-        'description', 
-        'price', 
-        'location', 
-        'land_area', 
-        'certificate_type', 
-        'status', 
+        'title',
+        'description',
+        'price',
+        'place',
+        'desc_detail',
+        'maps',
+        'wa',
+        'image',
+        'images',
+        'status',
         'featured',
-        'latitude', 
-        'longitude'
+        'land_area',
+        'certificate_type',
+        'latitude',
+        'longitude',
+        'land_listing_id'
     ];
 
     protected $casts = [
         'featured' => 'boolean',
+        'images' => 'array',
         'price' => 'float',
-        'land_area' => 'float'
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
     // Relationship with LandListing
@@ -57,3 +63,4 @@ class PropertyListing extends Model
                      ->orderBy('created_at', 'desc');
     }
 }
+

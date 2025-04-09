@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('property_listings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('land_listing_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('image');
             $table->json('images')->nullable();
             $table->string('title');
@@ -21,6 +23,10 @@ return new class extends Migration
             $table->string('maps')->nullable();
             $table->string('wa')->nullable();
             $table->boolean('featured')->default(false);
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
+            $table->integer('land_area')->nullable();
+            $table->string('certificate_type')->nullable();
             $table->timestamps();
         });
     }
@@ -30,3 +36,4 @@ return new class extends Migration
         Schema::dropIfExists('property_listings');
     }
 };
+

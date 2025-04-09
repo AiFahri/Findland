@@ -49,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Ubah dari patch ke post
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/profile/update-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.update.picture');
@@ -89,6 +89,8 @@ Route::prefix('admin')->group(function () {
             ->name('admin.properties.review');
         Route::post('/properties/{id}/approve', [PropertyController::class, 'approveListing'])
             ->name('admin.properties.approve');
+        Route::post('/properties/upload-image', [PropertyController::class, 'uploadImage'])
+            ->name('admin.properties.upload-image');
     });
 });
 

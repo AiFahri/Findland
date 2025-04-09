@@ -2,33 +2,36 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\PropertyListing;
-
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run()
     {
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-        PropertyListing::query()->delete();
-
-        // Generate 50 property listings
-        PropertyListing::factory()->count(50)->create();
         $this->call([
+            PackageSeeder::class,
             AdminUserSeeder::class,
-            // Other seeders
         ]);
+
+        if (app()->environment('local', 'development')) {
+            \App\Models\User::factory(5)->create()->each(function ($user) {
+                \App\Models\LandListing::factory()
+                    ->count(2)
+                    ->create([
+                        'user_id' => $user->id,
+                        'admin_status' => 'approved'
+                    ]);
+            });
+
+            \App\Models\LandListing::where('admin_status', 'approved')
+                ->get()
+                ->each(function ($landListing) {
+                    \App\Models\PropertyListing::factory()->create([
+                        'land_listing_id' => $landListing->id,
+                        'user_id' => $landListing->user_id
+                    ]);
+                });
+        }
     }
 }
+

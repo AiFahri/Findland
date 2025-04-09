@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LandListing extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id', 'full_name', 'birth_place_date', 'address', 
         'ktp_id', 'religion', 'phone_number', 
