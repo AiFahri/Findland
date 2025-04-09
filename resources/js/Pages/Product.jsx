@@ -1,148 +1,41 @@
-import React, {
-    useState,
-    useEffect,
-    useMemo,
-    useRef,
-    forwardRef,
-    useImperativeHandle,
-} from "react";
+import React, { useRef, forwardRef, useImperativeHandle } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Card from "../Components/common/Card";
+import Button from "../Components/common/Button";
 import logomap from "../../assets/map.svg";
 import logowa from "../../assets/wa.svg";
-import { formatRupiah, truncateText } from "@/Utils/formatter";
+import { formatRupiah } from "@/Utils/formatter";
+import { truncateText } from "@/Utils/formatter";
+import { useProductDisplay } from "@/hooks/useProductDisplay";
 
 const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const productContainerRef = useRef(null);
-
-    const propertyData = useMemo(
-        () => (Array.isArray(data) ? data : []),
-        [data]
-    );
-
-    const normalizeImages = (product) => {
-        console.log("Original Product:", product);
-
-        if (!product) return [];
-
-        const normalizePath = (image) => {
-            console.log("Processing image:", image);
-
-            if (!image) return null;
-
-            if (image.startsWith("/storage/")) {
-                console.log("Already storage path:", image);
-                return image;
-            }
-
-            if (typeof image === "string") {
-                const cleanPath = image.replace(/^\/+/, "");
-                const fullPath = `/storage/${cleanPath}`;
-                console.log("Normalized path:", fullPath);
-                return fullPath;
-            }
-
-            if (typeof image === "object" && image.path) {
-                const cleanPath = image.path.replace(/^\/+/, "");
-                const fullPath = `/storage/${cleanPath}`;
-                console.log("Object image path:", fullPath);
-                return fullPath;
-            }
-
-            console.log("Unhandled image type:", typeof image);
-            return null;
-        };
-
-        let images = [];
-
-        try {
-            if (product.images && typeof product.images === "string") {
-                const parsedImages = JSON.parse(
-                    product.images.replace(/\\/g, "").replace(/^"|"$/g, "")
-                );
-                console.log("Parsed images:", parsedImages);
-                images = parsedImages
-                    .map((img) => {
-                        const cleanImg = img
-                            .replace(/^"|"$/g, "")
-                            .replace(/^\/+/, "");
-                        return `/storage/${cleanImg}`;
-                    })
-                    .filter(Boolean);
-            }
-        } catch (error) {
-            console.error("Error parsing images:", error);
-        }
-
-        if (
-            !images.length &&
-            product.land_listing &&
-            Array.isArray(product.land_listing.images)
-        ) {
-            console.log("Land listing images:", product.land_listing.images);
-            images = product.land_listing.images
-                .map(normalizePath)
-                .filter(Boolean);
-        }
-
-        if (!images.length && product.image) {
-            console.log("Single image:", product.image);
-            const singleImage = normalizePath(product.image);
-            if (singleImage) images.push(singleImage);
-        }
-
-        console.log("Normalized images:", images);
-        return images;
-    };
+    const {
+        selectedProduct,
+        currentImageIndex,
+        propertyData,
+        setCurrentImageIndex,
+        normalizeImages,
+        handleProductSelect,
+        resetSelectedProduct,
+    } = useProductDisplay(data, initialSelectedProperty);
 
     useImperativeHandle(ref, () => ({
-        resetSelectedProduct() {
-            setSelectedProduct(null);
-            setCurrentImageIndex(0);
-        },
+        resetSelectedProduct,
     }));
 
-    useEffect(() => {
-        if (initialSelectedProperty) {
-            const matchedProperty = propertyData.find(
-                (property) => property.id === initialSelectedProperty.id
-            );
-
-            if (matchedProperty) {
-                setSelectedProduct(matchedProperty);
-                if (productContainerRef.current) {
-                    productContainerRef.current.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                    });
-                }
-            }
-        }
-    }, [initialSelectedProperty, propertyData]);
-
-    useEffect(() => {
-        if (!selectedProduct && propertyData.length > 0) {
-            setSelectedProduct(null);
-            setCurrentImageIndex(0);
-        }
-    }, [propertyData]);
-
-    const handleProductSelect = (product) => {
+    const handleProductSelectWithScroll = (product) => {
         if (productContainerRef.current) {
             productContainerRef.current.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
             });
         }
-
-        setSelectedProduct(product);
-        setCurrentImageIndex(0);
+        handleProductSelect(product);
     };
 
     if (!propertyData || propertyData.length === 0) {
@@ -188,18 +81,28 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                                             alt={`Property View ${index + 1}`}
                                             className="w-full h-full object-cover"
                                             onError={(e) => {
-                                                console.error(
-                                                    "Image load error:",
-                                                    {
-                                                        originalSrc: image,
-                                                        alt: `Property View ${
-                                                            index + 1
-                                                        }`,
-                                                        fullImageObject:
-                                                            selectedProduct,
-                                                    }
-                                                );
-                                                e.target.style.display = "none";
+                                                const img = e.target;
+                                                const currentSrc = img.src;
+                                                
+                                                // Jika ini adalah array path, coba path berikutnya
+                                                const paths = Array.isArray(image) ? image : [image];
+                                                const currentIndex = paths.indexOf(currentSrc);
+                                                const nextPath = paths[currentIndex + 1];
+                                                
+                                                if (nextPath) {
+                                                    img.src = nextPath;
+                                                } else {
+                                                    // Jika semua path sudah dicoba, gunakan default image
+                                                    img.src = '/assets/default-property.jpg';
+                                                    img.onerror = null; // Prevent infinite loop
+                                                }
+                                                
+                                                console.debug('Image load error:', {
+                                                    originalSrc: currentSrc,
+                                                    nextPath: nextPath || 'using default',
+                                                    alt: `Property View ${index + 1}`,
+                                                    availablePaths: paths
+                                                });
                                             }}
                                         />
                                     </SwiperSlide>
@@ -221,11 +124,10 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                             {selectedProduct.desc_detail}
                         </p>
                         <div className="flex items-center gap-4 mt-8">
-                            <a
-                                href={selectedProduct.maps}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center bg-pandanwangi text-bunulrejo px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                            <Button
+                                customColors="bg-pandanwangi text-bunulrejo hover:bg-opacity-90"
+                                onClick={() => window.open(selectedProduct.maps, '_blank')}
+                                className="flex items-center"
                             >
                                 <img
                                     src={logomap}
@@ -233,12 +135,11 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                                     className="w-6 h-6 mr-2"
                                 />
                                 Lihat Peta
-                            </a>
-                            <a
-                                href={selectedProduct.wa}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center bg-pandanwangi border border-pandanwangi text-bunulrejo px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                            </Button>
+                            <Button
+                                customColors="bg-pandanwangi text-bunulrejo hover:bg-opacity-90"
+                                onClick={() => window.open(selectedProduct.wa, '_blank')}
+                                className="flex items-center"
                             >
                                 <img
                                     src={logowa}
@@ -246,7 +147,7 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                                     className="w-6 h-6 mr-2"
                                 />
                                 WhatsApp
-                            </a>
+                            </Button>
                         </div>
                     </div>
                 </section>
@@ -256,7 +157,7 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
                 {propertyData.map((product, index) => (
                     <div
                         key={index}
-                        onClick={() => handleProductSelect(product)}
+                        onClick={() => handleProductSelectWithScroll(product)}
                         className="cursor-pointer hover:scale-105 transition-transform pb-1 pt-1"
                     >
                         <Card
@@ -280,3 +181,5 @@ const Product = forwardRef(({ data, initialSelectedProperty }, ref) => {
 });
 
 export default Product;
+
+
