@@ -1,22 +1,21 @@
-import { Head, Link } from '@inertiajs/react';
-import { useForm } from '@inertiajs/react';
+import { Head, Link } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import house from "../../../assets/house.jpg";
 import emailIcon from "../../../assets/message 1.svg";
 
 export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({
-        email: '',
+        email: "",
     });
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('password.email'));
+        post(route("password.email"));
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-login-pattern bg-cover bg-center">
             <div className="w-full max-w-[1300px] flex gap-2 p-8">
-                {/* Left side - Image */}
                 <div className="flex-1 hidden lg:block">
                     <div className="relative h-full w-full rounded-3xl overflow-hidden">
                         <img
@@ -27,7 +26,6 @@ export default function ForgotPassword({ status }) {
                     </div>
                 </div>
 
-                {/* Right side - Form */}
                 <div className="flex-1 max-w-[500px] pl-12">
                     <div className="mb-8">
                         <h2 className="flex items-center justify-center text-4xl font-medium font-sonsie text-pandanwangi mb-8 mt-10">
@@ -48,7 +46,8 @@ export default function ForgotPassword({ status }) {
                     </div>
 
                     <div className="mb-4 text-sm text-gray-600">
-                        Masukkan email Anda dan kami akan mengirimkan link untuk mengatur ulang password Anda.
+                        Masukkan email Anda dan kami akan mengirimkan link untuk
+                        mengatur ulang password Anda.
                     </div>
 
                     {status && (
@@ -69,10 +68,14 @@ export default function ForgotPassword({ status }) {
                                     type="email"
                                     placeholder="Masukkan email"
                                     className={`w-full pl-7 pr-10 py-2 border-0 border-b-2 ${
-                                        errors.email ? 'border-red-500' : 'border-pandanwangi'
+                                        errors.email
+                                            ? "border-red-500"
+                                            : "border-pandanwangi"
                                     } bg-transparent focus:border-lowokwaru focus:ring-0 outline-none transition`}
                                     value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    onChange={(e) =>
+                                        setData("email", e.target.value)
+                                    }
                                 />
                             </div>
                             {errors.email && (
@@ -95,4 +98,3 @@ export default function ForgotPassword({ status }) {
         </div>
     );
 }
-

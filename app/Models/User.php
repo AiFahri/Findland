@@ -1,12 +1,12 @@
 <?php
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -64,9 +64,24 @@ class User extends Authenticatable
 
     public function getProfilePictureUrlAttribute()
     {
-        return $this->profile_picture
-        ? asset('storage/' . $this->profile_picture)
-        : 'https://i.pravatar.cc/150?u=' . $this->id; // Default avatar dari pravatar
+        try {
+            // Jika user memiliki profile_picture dan file ada di storage
+            if ($this->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->profile_picture)) {
+                return asset('storage/' . $this->profile_picture);
+            }
+
+            // Jika user memiliki avatar dari Google
+            if ($this->avatar) {
+                return $this->avatar; // Gunakan avatar dari Google jika ada
+            }
+
+            // Default avatar dari ui-avatars dengan nama user
+            return 'https://ui-avatars.com/api/?name=' . urlencode($this->first_name . ' ' . $this->last_name) . '&background=153832&color=fff';
+        } catch (\Exception $e) {
+            // Jika terjadi error, gunakan ui-avatars sebagai fallback
+            \Illuminate\Support\Facades\Log::error('Error getting profile picture URL: ' . $e->getMessage());
+            return 'https://ui-avatars.com/api/?name=' . urlencode($this->first_name . ' ' . $this->last_name) . '&background=153832&color=fff';
+        }
     }
 
     /**

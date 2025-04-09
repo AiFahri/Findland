@@ -6,8 +6,8 @@ import doubleQuote from "../../../assets/doubleQuote.svg";
 import starFilled from "../../../assets/starFilled.svg";
 import starEmpty from "../../../assets/starEmpty.svg";
 import Modal from "@/Components/Modal";
-import { useAuth } from '@/hooks/useAuth';
-import { useReviewForm } from '@/hooks/useReviewForm';
+import { useAuth } from "@/hooks/useAuth";
+import { useReviewForm } from "@/hooks/useReviewForm";
 
 const Review = ({ reviews }) => {
     const { isAuthenticated } = useAuth();
@@ -23,7 +23,7 @@ const Review = ({ reviews }) => {
         errorMessage,
         handleContentChange,
         handleSubmit,
-        maxChars
+        maxChars,
     } = useReviewForm();
 
     const submitReview = (e) => {
@@ -61,7 +61,7 @@ const Review = ({ reviews }) => {
                                     Mengirim...
                                 </>
                             ) : (
-                                'Kirim'
+                                "Kirim"
                             )}
                         </button>
                     </div>
@@ -88,8 +88,14 @@ const Review = ({ reviews }) => {
 
                     <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-200">
                         <h3 className="text-lg font-semibold text-pandanwangi flex items-center gap-2">
-                            <span className="text-2xl"><img src={doubleQuote} className="w-5" alt="doubleQuote" /></span> Masukkan Ulasan
-                            Anda
+                            <span className="text-2xl">
+                                <img
+                                    src={doubleQuote}
+                                    className="w-5"
+                                    alt="doubleQuote"
+                                />
+                            </span>{" "}
+                            Masukkan Ulasan Anda
                         </h3>
                         <div className="relative">
                             <textarea
@@ -100,13 +106,18 @@ const Review = ({ reviews }) => {
                                 onChange={handleContentChange}
                                 minLength={10}
                                 maxLength={maxChars}
-                                style={{ overflowWrap: 'break-word', wordWrap: 'break-word' }}
+                                style={{
+                                    overflowWrap: "break-word",
+                                    wordWrap: "break-word",
+                                }}
                             ></textarea>
                             <div className="absolute bottom-4 right-4 flex gap-1">
                                 {[1, 2, 3, 4, 5].map((i) => (
                                     <img
                                         key={i}
-                                        src={rating >= i ? starFilled : starEmpty}
+                                        src={
+                                            rating >= i ? starFilled : starEmpty
+                                        }
                                         alt={`Star ${i}`}
                                         className="w-5 h-5 cursor-pointer transition-transform hover:scale-110"
                                         onClick={() => {
@@ -145,14 +156,24 @@ const Review = ({ reviews }) => {
                     {reviews.map((review) => (
                         <SwiperSlide key={review.id}>
                             <div className="bg-white p-6 rounded-2xl border border-gray-200 min-h-[200px] flex flex-col justify-between">
-                                <p className="text-gray-600 text-sm mb-4 break-words whitespace-pre-wrap" style={{ overflowWrap: 'break-word', wordWrap: 'break-word' }}>
+                                <p
+                                    className="text-gray-600 text-sm mb-4 break-words whitespace-pre-wrap"
+                                    style={{
+                                        overflowWrap: "break-word",
+                                        wordWrap: "break-word",
+                                    }}
+                                >
                                     {review.content}
                                 </p>
                                 <div className="flex justify-end items-center gap-3">
                                     <img
                                         src={
                                             review.user.profile_picture ||
-                                            `https://i.pravatar.cc/150?u=${review.user.id}`
+                                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                review.user.first_name +
+                                                    " " +
+                                                    review.user.last_name
+                                            )}&background=153832&color=fff`
                                         }
                                         alt={review.user.first_name}
                                         className="w-10 h-10 rounded-full border border-gray-300"
@@ -163,15 +184,16 @@ const Review = ({ reviews }) => {
                                             {review.user.last_name}
                                         </h4>
                                         <div className="flex justify-end gap-1">
-                                        {[...Array(review.rating)].map((_, i) => (
-                    <img
-                        key={i}
-                        src={starFilled}
-                        alt="star"
-                        className="w-2 h-2"
-                    />
-                ))}
-                                           
+                                            {[...Array(review.rating)].map(
+                                                (_, i) => (
+                                                    <img
+                                                        key={i}
+                                                        src={starFilled}
+                                                        alt="star"
+                                                        className="w-2 h-2"
+                                                    />
+                                                )
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -184,18 +206,3 @@ const Review = ({ reviews }) => {
     );
 };
 export default Review;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
