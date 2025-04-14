@@ -11,9 +11,9 @@ class LandListing extends Model
 
     protected $fillable = [
         'user_id', 'full_name', 'birth_place_date', 'address',
-        'ktp_id', 'religion', 'phone_number',
+        'ktp_id', 'phone_number',
         'npwp', 'ktp_scan', 'package_id', 'land_photos', 'admin_status',
-        'is_paid', 'expiry_date'
+        'is_paid', 'expiry_date', 'status'
     ];
 
     protected $casts = [
