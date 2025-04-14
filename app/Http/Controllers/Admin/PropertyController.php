@@ -56,7 +56,7 @@ class PropertyController extends Controller
         try {
             // Debug log
             Log::info('Raw request data:', $request->all());
-            
+
             // Parse property_details jika ada
             if ($request->has('property_details') && is_string($request->property_details)) {
                 $propertyDetails = json_decode($request->property_details, true);
@@ -85,13 +85,27 @@ class PropertyController extends Controller
 
             DB::beginTransaction();
 
-            $landListing = LandListing::findOrFail($id);
+            $landListing = LandListing::with('user')->findOrFail($id);
+
+            Log::info('Land Listing details:', [
+                'id' => $landListing->id,
+                'user_id' => $landListing->user_id,
+                'user' => $landListing->user ? $landListing->user->id : 'No user found',
+                'admin_status' => $landListing->admin_status,
+                'is_paid' => $landListing->is_paid ? 'Yes' : 'No'
+            ]);
 
             if ($landListing->admin_status !== 'pending') {
                 throw new \Exception('This listing has already been processed.');
             }
 
-            // Update land listing status
+            if (!$landListing->user_id) {
+                throw new \Exception('Land Listing tidak memiliki user_id yang valid');
+            }
+            if ($validatedData['admin_status'] === 'approved' && !$landListing->is_paid) {
+                throw new \Exception('Tidak dapat menyetujui listing yang belum dibayar. Silakan tunggu pembayaran selesai.');
+            }
+
             $landListing->update([
                 'admin_status' => $validatedData['admin_status'],
                 'admin_notes' => $validatedData['admin_notes'] ?? null,
@@ -101,10 +115,37 @@ class PropertyController extends Controller
 
             // Only create property listing if admin_status is approved
             if ($validatedData['admin_status'] === 'approved') {
+                // Hitung tanggal kedaluwarsa berdasarkan paket
+                $packageDuration = $landListing->package_id * 3; // 3 bulan per paket
+                $expiryDate = now()->addMonths($packageDuration);
+
+                // Update expiry_date di land_listing
+                $landListing->update([
+                    'expiry_date' => $expiryDate
+                ]);
+
+                Log::info('Setting expiry date:', [
+                    'package_id' => $landListing->package_id,
+                    'duration_months' => $packageDuration,
+                    'expiry_date' => $expiryDate
+                ]);
                 $propertyDetails = $validatedData['property_details'];
-                
+
+                // Log property details for debugging
+                Log::info('Creating property listing with details:', [
+                    'land_listing_id' => $landListing->id,
+                    'land_listing_user_id' => $landListing->user_id,
+                    'property_details' => $propertyDetails
+                ]);
+
                 // Create new property listing
-                PropertyListing::create([
+                // Pastikan user_id ada dan valid
+                if (!$landListing->user_id) {
+                    throw new \Exception('User ID tidak ditemukan pada land listing');
+                }
+
+                // Buat array data untuk property listing
+                $propertyData = [
                     'title' => $propertyDetails['title'],
                     'description' => $propertyDetails['description'],
                     'price' => $propertyDetails['price'],
@@ -121,7 +162,17 @@ class PropertyController extends Controller
                     'latitude' => $propertyDetails['latitude'] ?? null,
                     'longitude' => $propertyDetails['longitude'] ?? null,
                     'land_listing_id' => $landListing->id,
-                    'user_id' => $landListing->user_id  // Tambahkan user_id dari land listing
+                    'user_id' => $landListing->user_id
+                ];
+
+                // Log data yang akan dimasukkan ke database
+                Log::info('Property listing data to be inserted:', $propertyData);
+
+                $propertyListing = PropertyListing::create($propertyData);
+
+                Log::info('Property listing created successfully', [
+                    'property_listing_id' => $propertyListing->id,
+                    'land_listing_id' => $landListing->id
                 ]);
             }
 
@@ -147,6 +198,53 @@ class PropertyController extends Controller
         return response()->json([
             'path' => '/storage/' . $path,
         ]);
+    }
+
+    /**
+     * Extend the expiry date of a property listing
+     */
+    public function extendExpiry(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'months' => 'required|integer|min:1|max:12',
+            ]);
+
+            DB::beginTransaction();
+
+            $landListing = LandListing::findOrFail($id);
+
+            // Calculate new expiry date
+            $currentExpiry = $landListing->expiry_date ?? now();
+            $newExpiry = $currentExpiry->addMonths($request->months);
+
+            Log::info('Extending expiry date:', [
+                'land_listing_id' => $landListing->id,
+                'current_expiry' => $currentExpiry,
+                'extension_months' => $request->months,
+                'new_expiry' => $newExpiry
+            ]);
+
+            // Update expiry date
+            $landListing->update([
+                'expiry_date' => $newExpiry
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Expiry date extended successfully',
+                'expiry_date' => $newExpiry->format('Y-m-d H:i:s')
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error extending expiry date: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Failed to extend expiry date: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
 
