@@ -14,7 +14,7 @@ class LandListingFactory extends Factory
             'birth_place_date' => $this->faker->city() . ', ' . $this->faker->date(),
             'address'          => $this->faker->address(),
             'ktp_id'           => $this->faker->unique()->numerify('##############'),
-            'religion'         => $this->faker->randomElement(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha']),
+            // 'religion'         => $this->faker->randomElement(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha']),
             'phone_number'     => $this->faker->phoneNumber(),
             'npwp'             => $this->faker->numerify('##.###.###.#-###.###'),
             'ktp_scan'         => 'ktp/dummy.jpg',
