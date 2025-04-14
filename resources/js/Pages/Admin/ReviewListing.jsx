@@ -17,7 +17,6 @@ const ReviewListing = ({ listing }) => {
         type: "",
     });
 
-    // Initialize form data first
     const { data, setData, post, processing } = useForm({
         status: "",
         admin_notes: "",
@@ -36,13 +35,85 @@ const ReviewListing = ({ listing }) => {
             longitude: null,
             image: listing.land_photos[0] || null,
             images: listing.land_photos.slice(1) || [],
-            status: "Dijual",
+            status: listing.status || "Dijual",
         },
     });
 
     const [selectedMainImage, setSelectedMainImage] = useState(
         data.property_details.image
     );
+
+    const selectAsMainImage = (image) => {
+        setSelectedMainImage(image);
+        setData("property_details", {
+            ...data.property_details,
+            image: image,
+        });
+    };
+
+    const removeSubmittedImage = (index) => {
+        const newImages = [...submittedImages];
+        newImages.splice(index, 1);
+        setSubmittedImages(newImages);
+
+        if (index === 0 && newImages.length > 0) {
+            // If removing the first image, set the next one as main
+            setData("property_details", {
+                ...data.property_details,
+                image: newImages[0],
+                images: newImages.slice(1),
+            });
+            setSelectedMainImage(newImages[0]);
+        } else {
+            // Otherwise just update the images array
+            setData("property_details", {
+                ...data.property_details,
+                images: newImages.slice(1),
+            });
+        }
+    };
+
+    const handleImageUpload = async (e, type) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+            const response = await axios.post(
+                route("admin.properties.upload-image"),
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            const imagePath = response.data.path.replace("/storage/", "");
+
+            if (type === "main") {
+                setData("property_details", {
+                    ...data.property_details,
+                    image: imagePath,
+                });
+                setSelectedMainImage(imagePath);
+            } else {
+                const updatedImages = [
+                    ...data.property_details.images,
+                    imagePath,
+                ];
+                setData("property_details", {
+                    ...data.property_details,
+                    images: updatedImages,
+                });
+            }
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            setErrorMessage("Failed to upload image. Please try again.");
+        }
+    };
 
     const handleApprove = (actionStatus) => {
         const formData = new FormData();
@@ -69,7 +140,8 @@ const ReviewListing = ({ listing }) => {
                 images:
                     data.property_details.images ||
                     listing.land_photos.slice(1),
-                status: "Dijual", // Ini adalah property_status
+                status:
+                    data.property_details.status || listing.status || "Dijual", // Gunakan status dari form atau dari land_listing
                 featured: data.property_details.featured || false,
                 land_area: data.property_details.land_area || null,
                 certificate_type:
@@ -99,8 +171,6 @@ const ReviewListing = ({ listing }) => {
                     type: "success",
                 });
                 setShowModal(true);
-
-                // Redirect setelah sukses
                 setTimeout(() => {
                     window.location.href = route("admin.properties.pending");
                 }, 2000);
@@ -165,11 +235,35 @@ const ReviewListing = ({ listing }) => {
 
                 <div className="bg-white shadow-md rounded-lg p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-4">
-                        Package Information
+                        Seller Information
                     </h2>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                            <p className="font-medium">Package ID:</p>
+                            <p className="font-medium">Full Name:</p>
+                            <p>{listing.full_name}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Birth Place & Date:</p>
+                            <p>{listing.birth_place_date}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Address:</p>
+                            <p>{listing.address}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">KTP ID:</p>
+                            <p>{listing.ktp_id}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Phone Number:</p>
+                            <p>{listing.phone_number}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">NPWP:</p>
+                            <p>{listing.npwp}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Package:</p>
                             <p>{listing.package_id || "No package"}</p>
                         </div>
                         <div>
@@ -178,6 +272,50 @@ const ReviewListing = ({ listing }) => {
                                 {listing.package_id
                                     ? `${listing.package_id * 3} months`
                                     : "N/A"}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Status Tanah:</p>
+                            <p>{listing.status}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Status Pembayaran:</p>
+                            <p
+                                className={
+                                    listing.is_paid
+                                        ? "text-green-600 font-semibold"
+                                        : "text-red-600 font-semibold"
+                                }
+                            >
+                                {listing.is_paid
+                                    ? "Sudah Dibayar"
+                                    : "Belum Dibayar"}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Submitted At:</p>
+                            <p>
+                                {new Date(listing.created_at).toLocaleString()}
+                            </p>
+                        </div>
+                        {listing.expiry_date && (
+                            <div>
+                                <p className="font-medium">Expiry Date:</p>
+                                <p>
+                                    {new Date(
+                                        listing.expiry_date
+                                    ).toLocaleString()}
+                                </p>
+                            </div>
+                        )}
+                        <div>
+                            <p className="font-medium">KTP Image</p>
+                            <p>
+                                <img
+                                    src={`/storage/${listing.ktp_scan}`}
+                                    alt="KTP Image"
+                                    className="w-full h-48 object-cover rounded"
+                                />
                             </p>
                         </div>
                     </div>
@@ -250,7 +388,6 @@ const ReviewListing = ({ listing }) => {
                                 Edit Property Details
                             </h2>
 
-                            {/* Required Fields Section */}
                             <div className="bg-yellow-50 p-4 mb-6 rounded">
                                 <h3 className="font-semibold text-yellow-800 mb-2">
                                     Required Fields
@@ -300,7 +437,8 @@ const ReviewListing = ({ listing }) => {
                                     </div>
                                     <div>
                                         <label className="block mb-2 text-yellow-800">
-                                            Place/Area*
+                                            Place/Area* (Format: "Kecamatan,
+                                            Kabupaten")
                                         </label>
                                         <input
                                             type="text"
@@ -311,12 +449,17 @@ const ReviewListing = ({ listing }) => {
                                                     place: e.target.value,
                                                 })
                                             }
+                                            placeholder="Contoh: Lowokwaru, Malang"
                                             className="w-full p-2 border rounded"
                                         />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Format: Kecamatan, Kabupaten
+                                            (digunakan untuk filter)
+                                        </p>
                                     </div>
                                     <div>
                                         <label className="block mb-2 text-yellow-800">
-                                            Description*
+                                            Short Description* (untuk card)
                                         </label>
                                         <textarea
                                             value={
@@ -329,12 +472,17 @@ const ReviewListing = ({ listing }) => {
                                                     description: e.target.value,
                                                 })
                                             }
+                                            placeholder="Deskripsi singkat untuk ditampilkan di card"
                                             className="w-full p-2 border rounded h-24"
                                         />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Maksimal 100 karakter
+                                        </p>
                                     </div>
                                     <div>
                                         <label className="block mb-2 text-yellow-800">
-                                            Description Detail*
+                                            Detailed Description* (untuk halaman
+                                            detail)
                                         </label>
                                         <textarea
                                             value={
@@ -347,9 +495,55 @@ const ReviewListing = ({ listing }) => {
                                                     desc_detail: e.target.value,
                                                 })
                                             }
+                                            placeholder="Deskripsi lengkap properti"
                                             className="w-full p-2 border rounded"
                                             rows="4"
                                         />
+                                    </div>
+                                    <div>
+                                        <label className="block mb-2 text-yellow-800">
+                                            Land Area (m²)*
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={
+                                                data.property_details
+                                                    .land_area || ""
+                                            }
+                                            onChange={(e) =>
+                                                setData("property_details", {
+                                                    ...data.property_details,
+                                                    land_area: e.target.value,
+                                                })
+                                            }
+                                            className="w-full p-2 border rounded"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block mb-2 text-yellow-800">
+                                            Certificate Type*
+                                        </label>
+                                        <select
+                                            value={
+                                                data.property_details
+                                                    .certificate_type || ""
+                                            }
+                                            onChange={(e) =>
+                                                setData("property_details", {
+                                                    ...data.property_details,
+                                                    certificate_type:
+                                                        e.target.value,
+                                                })
+                                            }
+                                            className="w-full p-2 border rounded"
+                                        >
+                                            <option value="">
+                                                Select Certificate Type
+                                            </option>
+                                            <option value="SHM">SHM</option>
+                                            <option value="SHGB">SHGB</option>
+                                            <option value="AJB">AJB</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="block mb-2 text-yellow-800">
@@ -383,18 +577,33 @@ const ReviewListing = ({ listing }) => {
                                             className="w-full p-2 border rounded"
                                         />
                                     </div>
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={
+                                                data.property_details.featured
+                                            }
+                                            onChange={(e) =>
+                                                setData("property_details", {
+                                                    ...data.property_details,
+                                                    featured: e.target.checked,
+                                                })
+                                            }
+                                            className="mr-2"
+                                        />
+                                        <label className="text-yellow-800">
+                                            Featured Property
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="bg-gray-50 p-4 rounded">
+                            {/* <div className="bg-gray-50 p-4 rounded">
                                 <h3 className="font-semibold text-gray-700 mb-2">
-                                    Additional Details
+                                    Additional Images
                                 </h3>
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block mb-2">
-                                            Additional Images
-                                        </label>
                                         <input
                                             type="file"
                                             onChange={(e) =>
@@ -420,123 +629,8 @@ const ReviewListing = ({ listing }) => {
                                             )}
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="block mb-2">
-                                            Land Area (m²)
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={
-                                                data.property_details
-                                                    .land_area || ""
-                                            }
-                                            onChange={(e) =>
-                                                setData("property_details", {
-                                                    ...data.property_details,
-                                                    land_area: e.target.value,
-                                                })
-                                            }
-                                            className="w-full p-2 border rounded"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block mb-2">
-                                            Certificate Type
-                                        </label>
-                                        <select
-                                            value={
-                                                data.property_details
-                                                    .certificate_type || ""
-                                            }
-                                            onChange={(e) =>
-                                                setData("property_details", {
-                                                    ...data.property_details,
-                                                    certificate_type:
-                                                        e.target.value,
-                                                })
-                                            }
-                                            className="w-full p-2 border rounded"
-                                        >
-                                            <option value="">
-                                                Select Certificate Type
-                                            </option>
-                                            <option value="SHM">SHM</option>
-                                            <option value="SHGB">SHGB</option>
-                                            <option value="AJB">AJB</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block mb-2">
-                                            Google Maps Link
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={
-                                                data.property_details.maps || ""
-                                            }
-                                            onChange={(e) =>
-                                                setData("property_details", {
-                                                    ...data.property_details,
-                                                    maps: e.target.value,
-                                                })
-                                            }
-                                            className="w-full p-2 border rounded"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block mb-2">
-                                            WhatsApp Link
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={
-                                                data.property_details.wa || ""
-                                            }
-                                            onChange={(e) =>
-                                                setData("property_details", {
-                                                    ...data.property_details,
-                                                    wa: e.target.value,
-                                                })
-                                            }
-                                            className="w-full p-2 border rounded"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block mb-2">
-                                            Detailed Description
-                                        </label>
-                                        <textarea
-                                            value={
-                                                data.property_details
-                                                    .desc_detail || ""
-                                            }
-                                            onChange={(e) =>
-                                                setData("property_details", {
-                                                    ...data.property_details,
-                                                    desc_detail: e.target.value,
-                                                })
-                                            }
-                                            className="w-full p-2 border rounded h-24"
-                                        />
-                                    </div>
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={
-                                                data.property_details.featured
-                                            }
-                                            onChange={(e) =>
-                                                setData("property_details", {
-                                                    ...data.property_details,
-                                                    featured: e.target.checked,
-                                                })
-                                            }
-                                            className="mr-2"
-                                        />
-                                        <label>Featured Property</label>
-                                    </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className="mt-4">
                                 <label className="block mb-2">
@@ -554,6 +648,34 @@ const ReviewListing = ({ listing }) => {
                         </div>
                     )}
 
+                    {!listing.is_paid && (
+                        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                            <div className="flex items-center">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 text-red-500 mr-2"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                                <span className="text-red-700 font-medium">
+                                    Peringatan: Listing ini belum dibayar
+                                </span>
+                            </div>
+                            <p className="mt-2 text-red-600 text-sm">
+                                Anda tidak dapat menyetujui listing yang belum
+                                dibayar. Silakan tunggu hingga pembayaran
+                                selesai atau hubungi penjual untuk menyelesaikan
+                                pembayaran.
+                            </p>
+                        </div>
+                    )}
+
                     <div className="mt-6 flex space-x-4">
                         {!isEditing ? (
                             <>
@@ -565,8 +687,17 @@ const ReviewListing = ({ listing }) => {
                                 </button>
                                 <button
                                     onClick={() => handleApprove("approved")}
-                                    disabled={processing}
-                                    className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+                                    disabled={processing || !listing.is_paid}
+                                    className={`${
+                                        listing.is_paid
+                                            ? "bg-green-500 hover:bg-green-600"
+                                            : "bg-gray-400 cursor-not-allowed"
+                                    } text-white px-6 py-2 rounded disabled:opacity-50`}
+                                    title={
+                                        !listing.is_paid
+                                            ? "Listing belum dibayar"
+                                            : ""
+                                    }
                                 >
                                     {processing
                                         ? "Processing..."
@@ -590,8 +721,17 @@ const ReviewListing = ({ listing }) => {
                                 </button>
                                 <button
                                     onClick={() => handleApprove("approved")}
-                                    disabled={processing}
-                                    className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+                                    disabled={processing || !listing.is_paid}
+                                    className={`${
+                                        listing.is_paid
+                                            ? "bg-green-500 hover:bg-green-600"
+                                            : "bg-gray-400 cursor-not-allowed"
+                                    } text-white px-6 py-2 rounded disabled:opacity-50`}
+                                    title={
+                                        !listing.is_paid
+                                            ? "Listing belum dibayar"
+                                            : ""
+                                    }
                                 >
                                     {processing
                                         ? "Processing..."
