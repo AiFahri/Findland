@@ -30,11 +30,12 @@ const Jual = () => {
         birth_place_date: "",
         address: "",
         ktp_id: "",
-        religion: "",
         phone_number: "",
         npwp: "",
         ktp_scan: null,
         land_photos: [],
+        status: "Dijual", 
+        agree_terms: false,
     });
 
     const handleFileUpload = (event) => {
@@ -142,32 +143,41 @@ const Jual = () => {
 
     return (
         <>
-            <Head title="Jual Lahan" />
-            <h1 className="text-4xl font-extrabold text-[#3E5245] mb-6 mt-8">
-                Jual Lahan - Paket{" "}
-                {selectedPackage ? selectedPackage : "Tidak ada paket terpilih"}
-            </h1>
-            {successMessage && (
-                <div
-                    className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-                    role="alert"
-                >
-                    <span className="block sm:inline">{successMessage}</span>
-                </div>
-            )}
-
-            {errorMessage && (
-                <div
-                    className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-                    role="alert"
-                >
-                    <span className="block sm:inline">{errorMessage}</span>
-                </div>
-            )}
-            <p className="text-lg text-gray-700 mb-6">
-                Ingin menjual properti Anda? Silahkan lengkapi data berikut
-            </p>
             <div className="max-w-7xl mx-auto bg-white mb-8">
+                <div>
+                    <Head title="Jual Lahan" />
+                    <h1 className="text-4xl font-extrabold text-[#3E5245] mb-6 mt-8">
+                        Jual Lahan - Paket{" "}
+                        {selectedPackage
+                            ? selectedPackage
+                            : "Tidak ada paket terpilih"}
+                    </h1>
+                    {successMessage && (
+                        <div
+                            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+                            role="alert"
+                        >
+                            <span className="block sm:inline">
+                                {successMessage}
+                            </span>
+                        </div>
+                    )}
+
+                    {errorMessage && (
+                        <div
+                            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                            role="alert"
+                        >
+                            <span className="block sm:inline">
+                                {errorMessage}
+                            </span>
+                        </div>
+                    )}
+                    <p className="text-lg text-gray-700 mb-6">
+                        Ingin menjual properti Anda? Silahkan lengkapi data
+                        berikut
+                    </p>
+                </div>
                 <form
                     onSubmit={handleSubmit}
                     className="grid md:grid-cols-2 gap-8"
@@ -184,7 +194,6 @@ const Jual = () => {
                             },
                             { name: "address", label: "Alamat" },
                             { name: "ktp_id", label: "ID KTP" },
-                            { name: "religion", label: "Agama" },
                             { name: "phone_number", label: "Nomer HP" },
                             { name: "npwp", label: "NPWP" },
                         ].map((field, index) => (
@@ -242,6 +251,44 @@ const Jual = () => {
                     </div>
 
                     <div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Status Tanah *
+                            </label>
+                            <div className="flex gap-4">
+                                <label className="inline-flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="status"
+                                        value="Dijual"
+                                        checked={form.data.status === "Dijual"}
+                                        onChange={() =>
+                                            form.setData("status", "Dijual")
+                                        }
+                                        className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
+                                    />
+                                    <span className="ml-2 text-gray-700">
+                                        Dijual
+                                    </span>
+                                </label>
+                                <label className="inline-flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="status"
+                                        value="Disewa"
+                                        checked={form.data.status === "Disewa"}
+                                        onChange={() =>
+                                            form.setData("status", "Disewa")
+                                        }
+                                        className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
+                                    />
+                                    <span className="ml-2 text-gray-700">
+                                        Disewa
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
                         <h3 className="text-xl font-semibold text-gray-900">
                             Upload Gambar Tanah (4 Gambar)
                         </h3>
@@ -292,10 +339,40 @@ const Jual = () => {
                             onChange={handleFileUpload}
                             className="mt-4 block w-full border border-gray-300 p-2 rounded-lg"
                         />
+                        <div className="mt-6">
+                            <label className="inline-flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={form.data.agree_terms}
+                                    onChange={(e) =>
+                                        form.setData(
+                                            "agree_terms",
+                                            e.target.checked
+                                        )
+                                    }
+                                    className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">
+                                    Dengan ini saya menyatakan bahwa data yang
+                                    saya berikan adalah benar dan saya
+                                    menyetujui syarat dan ketentuan yang ada.
+                                </span>
+                            </label>
+                            {form.errors.agree_terms && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {form.errors.agree_terms}
+                                </p>
+                            )}
+                        </div>
+
                         <button
                             type="submit"
-                            className="mt-6 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition"
-                            disabled={images.length !== 4 || form.processing}
+                            className="mt-4 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition"
+                            disabled={
+                                images.length !== 4 ||
+                                !form.data.agree_terms ||
+                                form.processing
+                            }
                         >
                             {form.processing ? "Mengirim..." : "Kirim"}
                         </button>
