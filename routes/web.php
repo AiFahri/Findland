@@ -102,6 +102,8 @@ Route::prefix('admin')->group(function () {
             ->name('admin.properties.approve');
         Route::post('/properties/upload-image', [PropertyController::class, 'uploadImage'])
             ->name('admin.properties.upload-image');
+        Route::post('/properties/{id}/extend-expiry', [PropertyController::class, 'extendExpiry'])
+            ->name('admin.properties.extend-expiry');
     });
 });
 
