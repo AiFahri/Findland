@@ -68,7 +68,7 @@ const AdminDashboard = ({ auth, propertyStats, recentListings }) => {
                                             {listing.title}
                                         </h3>
                                         <p className="text-gray-600">
-                                            Submitted by: {listing.user.name}
+                                            Submitted by: {listing.full_name}
                                         </p>
                                         <p className="text-sm text-gray-500">
                                             {new Date(

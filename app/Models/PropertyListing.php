@@ -25,7 +25,8 @@ class PropertyListing extends Model
         'certificate_type',
         'latitude',
         'longitude',
-        'land_listing_id'
+        'land_listing_id',
+        'user_id'
     ];
 
     protected $casts = [

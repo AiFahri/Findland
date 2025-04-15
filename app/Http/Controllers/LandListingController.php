@@ -49,13 +49,15 @@ class LandListingController extends Controller
                 'birth_place_date' => 'required|string|max:255',
                 'address' => 'required|string',
                 'ktp_id' => 'required|string|unique:land_listings,ktp_id',
-                'religion' => 'required|string|max:100',
+                // 'religion' => 'required|string|max:100',
                 // 'monthly_income' => 'required|numeric|min:0',
                 'phone_number' => 'required|string|max:15',
                 'npwp' => 'required|string|max:20',
                 'ktp_scan' => 'required|image|mimes:jpeg,png,jpg|max:2048',
                 'land_photos' => 'required|array|min:4|max:4',
-                'land_photos.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+                'land_photos.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'status' => 'required|in:Dijual,Disewa',
+                'agree_terms' => 'required|accepted'
             ]);
 
             DB::beginTransaction();
@@ -76,14 +78,15 @@ class LandListingController extends Controller
                 'birth_place_date' => $validatedData['birth_place_date'],
                 'address' => $validatedData['address'],
                 'ktp_id' => $validatedData['ktp_id'],
-                'religion' => $validatedData['religion'],
+                // 'religion' => $validatedData['religion'],
                 // 'monthly_income' => $validatedData['monthly_income'],
                 'phone_number' => $validatedData['phone_number'],
                 'npwp' => $validatedData['npwp'],
                 'ktp_scan' => $ktpPath,
                 'package_id' => $request->input('package_id'),
                 'land_photos' => $photoPaths,
-                'admin_status' => 'pending'
+                'admin_status' => 'pending',
+                'status' => $validatedData['status']
             ]);
             Log::info('Land Listing Created', ['id' => $landListing->id]);
 
