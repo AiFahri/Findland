@@ -8,7 +8,7 @@ const MainLayout = ({ children, ...props }) => {
     const { auth } = usePage().props;
 
     return (
-        <div className="px-12 py-6">
+        <div className="px-12 py-6 bg-[#f1f1f1]">
             <Navbar auth={auth} />
             {children}
             <Footer />
