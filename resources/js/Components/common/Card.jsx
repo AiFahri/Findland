@@ -6,7 +6,10 @@ const Card = ({
     status,
     price,
     description,
+    desc_detail,
     place,
+    land_area,
+    certificate_type,
     className = "",
     ...props
 }) => {
@@ -20,6 +23,15 @@ const Card = ({
                     src={image}
                     alt={description}
                     className="w-fit h-full sm:h-full md:h-full object-cover rounded-t-2xl"
+                    onError={(e) => {
+                        e.target.src = "/assets/default-property.jpg";
+                        e.target.onerror = null; 
+                        console.debug("Card image load error:", {
+                            originalSrc: image,
+                            fallbackSrc: "/assets/default-property.jpg",
+                            title: title,
+                        });
+                    }}
                 />
             </div>
             <div className="p-3 sm:p-4 flex flex-col h-auto rounded-b-2xl">
@@ -42,9 +54,25 @@ const Card = ({
                         {description}
                     </p>
                 </div>
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-auto pt-0">
-                    {place}
-                </p>
+                <div className="flex flex-col mt-auto pt-1">
+                    {(land_area || certificate_type) && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                            {land_area && (
+                                <span className="text-[8px] sm:text-[10px] bg-gray-100 text-gray-700 px-1 py-0.5 rounded">
+                                    {land_area} m²
+                                </span>
+                            )}
+                            {certificate_type && (
+                                <span className="text-[8px] sm:text-[10px] bg-gray-100 text-gray-700 px-1 py-0.5 rounded">
+                                    {certificate_type}
+                                </span>
+                            )}
+                        </div>
+                    )}
+                    <p className="text-[10px] sm:text-xs text-gray-500">
+                        {place}
+                    </p>
+                </div>
             </div>
         </div>
     );
