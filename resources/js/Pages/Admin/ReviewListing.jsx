@@ -3,6 +3,7 @@ import { Head, useForm } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Modal from "@/Components/Modal";
 import axios from "axios";
+import { generatePropertyImageName } from "@/Utils/imageHelper";
 
 const ReviewListing = ({ listing }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -77,8 +78,25 @@ const ReviewListing = ({ listing }) => {
         const file = e.target.files[0];
         if (!file) return;
 
+        const extension = file.name.split(".").pop().toLowerCase();
+
+        const cleanTitle = data.property_details.title
+            .replace(/[^a-zA-Z0-9]/g, "")
+            .toUpperCase();
+        const imageNumber =
+            type === "main" ? 1 : data.property_details.images.length + 2;
+        const newFileName = generatePropertyImageName(
+            listing.id,
+            cleanTitle,
+            imageNumber,
+            extension
+        );
+
+        console.log("Uploading image with filename:", newFileName);
+
         const formData = new FormData();
         formData.append("image", file);
+        formData.append("filename", newFileName); // Tambahkan nama file yang diinginkan
 
         try {
             const response = await axios.post(
@@ -92,6 +110,7 @@ const ReviewListing = ({ listing }) => {
             );
 
             const imagePath = response.data.path.replace("/storage/", "");
+            console.log("Image uploaded successfully:", imagePath);
 
             if (type === "main") {
                 setData("property_details", {
