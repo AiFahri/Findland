@@ -11,7 +11,11 @@ import { useDropdownMenu } from "@/hooks/useDropdownMenu";
 
 const socialLinks = [
     { href: "https://wa.me/62123456789", img: logophone, alt: "Phone" },
-    { href: "mailto:findland.official@gmail.com", img: logoemail, alt: "Email" },
+    {
+        href: "mailto:findland.official@gmail.com",
+        img: logoemail,
+        alt: "Email",
+    },
     {
         href: "https://www.youtube.com/channel/findland",
         img: logoyt,
@@ -52,7 +56,7 @@ const SocialLink = ({ href, img, alt }) => (
 
 const NavItem = ({ nav, isLayananOpen, layananRef, toggleLayanan }) => {
     const { url } = usePage();
-    
+
     if (nav.dropdown) {
         return (
             <div className="relative group p-4" ref={layananRef}>
@@ -61,13 +65,17 @@ const NavItem = ({ nav, isLayananOpen, layananRef, toggleLayanan }) => {
                     className="flex items-center text-white hover:text-bunulrejo hover:underline hover:underline-offset-2 cursor-pointer"
                 >
                     {nav.label}
-                    <img src={dropdown} alt="Dropdown" className="w-4 h-4 ml-1 rotate-180" />
+                    <img
+                        src={dropdown}
+                        alt="Dropdown"
+                        className="w-4 h-4 ml-1 rotate-180"
+                    />
                 </button>
-                <div 
+                <div
                     className={`absolute z-50 left-0 bottom-full mb-2 w-40 bg-pandanwangi text-white rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${
-                        isLayananOpen 
-                            ? 'opacity-100 translate-y-0 visible' 
-                            : 'opacity-0 translate-y-2 invisible'
+                        isLayananOpen
+                            ? "opacity-100 translate-y-0 visible"
+                            : "opacity-0 translate-y-2 invisible"
                     }`}
                 >
                     {nav.dropdown.map((item, subIndex) => (
@@ -100,33 +108,32 @@ const NavItem = ({ nav, isLayananOpen, layananRef, toggleLayanan }) => {
 
 const Footer = () => {
     const { url } = usePage();
-    const { 
-        isOpen: isMenuOpen, 
-        toggle: toggleMenu 
-    } = useDropdownMenu();
+    const { isOpen: isMenuOpen, toggle: toggleMenu } = useDropdownMenu();
     const {
         isOpen: isLayananOpen,
         dropdownRef: layananRef,
-        toggle: toggleLayanan
+        toggle: toggleLayanan,
     } = useDropdownMenu();
 
     return (
         <footer className="bg-[#0E372E] text-bunulrejo p-4 sm:p-6 md:p-12 rounded-3xl">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12">
+            <div className="max-w-8xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12">
                 <div className="text-center md:text-left space-y-3 md:space-y-4 w-full md:w-3/5">
-                    <h1 className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-medium leading-tight">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-medium leading-tight">
                         Jual beli tanah
                         <span className="block">terpercaya</span>
                         <span className="block">findland</span>
-                    </h1>
-                    <p className="font-light text-sm sm:text-lg md:text-lg lg:text-xl leading-relaxed px-2 sm:px-8 md:px-0 max-w-xl mx-auto md:mx-0">
-                        Dibuat untuk kenyamanan Anda
-                        <span className="block">demi masa depan properti yang</span>
-                        <span className="block">lebih indah dan berkelanjutan</span>
+                    </h2>
+                    <p className="font-light text-sm sm:text-lg md:text-lg lg:text-xl leading-relaxed px-2 sm:px-8 md:px-0 max-w-3xl mx-auto md:mx-0">
+                        Dibuat untuk kenyamanan Anda demi
+                        <span className="block">
+                            masa depan properti yang lebih indah dan
+                            berkelanjutan
+                        </span>
                     </p>
                 </div>
 
-                <div className="bg-[#184D42] p-4 sm:p-6 md:p-6 rounded-2xl mt-6 md:mt-0 grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="bg-[#184D42] p-4 sm:p-6 md:p-6 lg:p-8 rounded-2xl mt-6 md:mt-0 grid grid-cols-2 gap-3 sm:gap-4 lg:gap-8">
                     {socialLinks.map((link, index) => (
                         <SocialLink key={index} {...link} />
                     ))}
@@ -135,17 +142,17 @@ const Footer = () => {
 
             <div className="bg-white/[0.03] p-2 rounded-full mt-2 lg:mt-0 flex items-center justify-between px-3 sm:px-6 md:px-8 lg:px-12 relative z-50">
                 <div className="flex items-center gap-2">
-                <Link href="/" className="flex items-center gap-2">
-                    <img
-                        src={logofindland}
-                        alt="Findland Logo"
-                        className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12"
-                    />
-                    <span className="font-light font-sonsie text-sm sm:text-base lg:text-md text-white">
-                        Findland Official
-                    </span> 
-                </Link>
-                </div>      
+                    <Link href="/" className="flex items-center gap-2">
+                        <img
+                            src={logofindland}
+                            alt="Findland Logo"
+                            className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12"
+                        />
+                        <span className="font-light font-sonsie text-sm sm:text-base lg:text-md text-white">
+                            Findland Official
+                        </span>
+                    </Link>
+                </div>
                 <button
                     className="[@media(min-width:1024px)]:hidden text-white"
                     onClick={toggleMenu}
@@ -154,9 +161,9 @@ const Footer = () => {
                 </button>
                 <nav
                     className={`absolute bottom-full left-0 right-0 mb-2 bg-white/[0.03] [@media(min-width:1024px)]:static [@media(min-width:1024px)]:flex [@media(min-width:1024px)]:gap-4 lg:gap-6 rounded-full shadow-lg [@media(min-width:1024px)]:shadow-none [@media(min-width:1024px)]:bg-transparent transform transition-all duration-300 ease-in-out ${
-                        isMenuOpen 
-                            ? 'opacity-100 -translate-y-2 visible' 
-                            : 'opacity-0 translate-y-2 invisible'
+                        isMenuOpen
+                            ? "opacity-100 -translate-y-2 visible"
+                            : "opacity-0 translate-y-2 invisible"
                     } [@media(min-width:1024px)]:opacity-100 [@media(min-width:1024px)]:visible [@media(min-width:1024px)]:translate-y-0`}
                 >
                     {navLinks.map((nav, index) => (
