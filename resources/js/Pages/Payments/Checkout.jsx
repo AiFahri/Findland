@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Head } from "@inertiajs/react";
 import MainLayout from "@/Layouts/MainLayout";
 import { formatRupiah } from "@/Utils/formatter";
+import axios from "axios";
 
 export default function Checkout({
     payment,
@@ -11,6 +12,27 @@ export default function Checkout({
     clientKey,
     error,
 }) {
+    const updatePaymentStatus = async (status, result) => {
+        try {
+            console.log("Updating payment status:", {
+                status,
+                result,
+                payment_id: payment.id,
+            });
+
+            await axios.post("/api/payments/update-status", {
+                order_id: payment.id,
+                status: status,
+                transaction_id: result?.transaction_id || null,
+                payment_type: result?.payment_type || null,
+            });
+
+            console.log("Payment status updated successfully");
+        } catch (error) {
+            console.error("Error updating payment status:", error);
+        }
+    };
+
     useEffect(() => {
         console.log("Checkout component mounted");
         console.log("Snap Token:", snapToken);
@@ -35,14 +57,17 @@ export default function Checkout({
                         window.snap.pay(snapToken, {
                             onSuccess: function (result) {
                                 console.log("Payment success:", result);
+                                updatePaymentStatus("success", result);
                                 window.location.href = `/payments/finish?order_id=${payment.id}`;
                             },
                             onPending: function (result) {
                                 console.log("Payment pending:", result);
+                                updatePaymentStatus("pending", result);
                                 window.location.href = `/payments/unfinish?order_id=${payment.id}`;
                             },
                             onError: function (result) {
                                 console.log("Payment error:", result);
+                                updatePaymentStatus("failed", result);
                                 window.location.href = `/payments/error?order_id=${payment.id}`;
                             },
                             onClose: function () {

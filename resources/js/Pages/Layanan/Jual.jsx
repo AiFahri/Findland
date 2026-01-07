@@ -11,6 +11,46 @@ const Jual = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const { flash, errors } = usePage().props;
 
+    const [formErrors, setFormErrors] = useState({});
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    const validateForm = () => {
+        const errors = {};
+
+        const requiredFields = [
+            "full_name",
+            "birth_place_date",
+            "address",
+            "ktp_id",
+            "phone_number",
+            "npwp",
+            "maps_link",
+        ];
+
+        requiredFields.forEach((field) => {
+            if (!form.data[field]) {
+                errors[field] = `${field.replace("_", " ")} harus diisi`;
+            }
+        });
+
+        if (!form.data.ktp_scan) {
+            errors.ktp_scan = "Scan KTP harus diunggah";
+        }
+
+        if (images.length !== 4) {
+            errors.land_photos = `Anda harus mengunggah 4 gambar (saat ini: ${images.length})`;
+        }
+
+        if (!form.data.agree_terms) {
+            errors.agree_terms = "Anda harus menyetujui syarat dan ketentuan";
+        }
+
+        setFormErrors(errors);
+        setIsFormValid(Object.keys(errors).length === 0);
+
+        return Object.keys(errors).length === 0;
+    };
+
     useEffect(() => {
         if (packageId) {
             setSelectedPackage(packageId);
@@ -34,7 +74,8 @@ const Jual = () => {
         npwp: "",
         ktp_scan: null,
         land_photos: [],
-        status: "Dijual", 
+        status: "Dijual",
+        maps_link: "",
         agree_terms: false,
     });
 
@@ -70,9 +111,22 @@ const Jual = () => {
                 error = "Ukuran gambar maksimal 2MB";
                 continue;
             }
+
+            const cleanName = form.data.full_name
+                .replace(/[^a-zA-Z0-9]/g, "")
+                .toUpperCase();
+            const imageNumber = validImages.length + 1;
+            const extension = file.name.split(".").pop().toLowerCase();
+            const fileWithMetadata = file;
+            fileWithMetadata.customFileName = `property_temp_${cleanName}_${imageNumber}.${extension}`;
+
             const reader = new FileReader();
             reader.onloadend = () => {
-                validImages.push({ file, preview: reader.result });
+                validImages.push({
+                    file: fileWithMetadata,
+                    preview: reader.result,
+                    customFileName: fileWithMetadata.customFileName,
+                });
                 setImages([...validImages]);
                 form.setData(
                     "land_photos",
@@ -98,6 +152,11 @@ const Jual = () => {
         e.preventDefault();
         setSuccessMessage("");
         setErrorMessage("");
+        if (!validateForm()) {
+            setErrorMessage("Mohon lengkapi semua data yang diperlukan");
+            return;
+        }
+
         const formData = new FormData();
 
         Object.keys(form.data).forEach((key) => {
@@ -141,12 +200,16 @@ const Jual = () => {
         });
     };
 
+    useEffect(() => {
+        validateForm();
+    }, [form.data, images]);
+
     return (
         <>
-            <div className="max-w-7xl mx-auto bg-white mb-8">
+            <div className="max-w-8xl mx-auto bg-white mb-8 rounded-3xl p-8 mt-8">
                 <div>
                     <Head title="Jual Lahan" />
-                    <h1 className="text-4xl font-extrabold text-[#3E5245] mb-6 mt-8">
+                    <h1 className="text-4xl lg:text-5xl font-extrabold text-[#3E5245] mb-6 mt-8">
                         Jual Lahan - Paket{" "}
                         {selectedPackage
                             ? selectedPackage
@@ -196,10 +259,15 @@ const Jual = () => {
                             { name: "ktp_id", label: "ID KTP" },
                             { name: "phone_number", label: "Nomer HP" },
                             { name: "npwp", label: "NPWP" },
+                            {
+                                name: "maps_link",
+                                label: "Link Google Maps Lokasi Lahan",
+                                placeholder: "https://maps.google.com/...",
+                            },
                         ].map((field, index) => (
                             <div key={index}>
                                 <label className="block text-sm font-medium text-gray-700">
-                                    {field.label} *
+                                    {field.label} {field.name !== "maps_link"}
                                 </label>
                                 <input
                                     type="text"
@@ -209,7 +277,10 @@ const Jual = () => {
                                         form.setData(field.name, e.target.value)
                                     }
                                     className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-400"
-                                    placeholder={`Masukkan ${field.label.toLowerCase()}`}
+                                    placeholder={
+                                        field.placeholder ||
+                                        `Masukkan ${field.label.toLowerCase()}`
+                                    }
                                 />
                                 {form.errors[field.name] && (
                                     <p className="text-red-500 text-sm">
@@ -220,7 +291,7 @@ const Jual = () => {
                         ))}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Scan Foto KTP *
+                                Upload Scan Foto KTP
                             </label>
                             <input
                                 type="file"
@@ -290,10 +361,12 @@ const Jual = () => {
                         </div>
 
                         <h3 className="text-xl font-semibold text-gray-900">
-                            Upload Gambar Tanah (4 Gambar)
+                            Upload Gambar Tanah ({images.length}/4 Gambar)
                         </h3>
-                        {errorMessage && (
-                            <p className="text-red-500">{errorMessage}</p>
+                        {formErrors.land_photos && (
+                            <p className="text-red-500 text-sm">
+                                {formErrors.land_photos}
+                            </p>
                         )}
                         <div className="grid grid-cols-4 gap-4 mt-6">
                             {images.map((img, index) => (
@@ -340,7 +413,13 @@ const Jual = () => {
                             className="mt-4 block w-full border border-gray-300 p-2 rounded-lg"
                         />
                         <div className="mt-6">
-                            <label className="inline-flex items-center">
+                            <label
+                                className={`inline-flex items-center ${
+                                    formErrors.agree_terms
+                                        ? "text-red-600"
+                                        : "text-gray-700"
+                                }`}
+                            >
                                 <input
                                     type="checkbox"
                                     checked={form.data.agree_terms}
@@ -350,32 +429,43 @@ const Jual = () => {
                                             e.target.checked
                                         )
                                     }
-                                    className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                    className={`h-4 w-4 ${
+                                        formErrors.agree_terms
+                                            ? "border-red-500 text-red-600"
+                                            : "border-gray-300 text-green-600"
+                                    } rounded focus:ring-green-500`}
                                 />
-                                <span className="ml-2 text-sm text-gray-700">
-                                    Dengan ini saya menyatakan bahwa data yang
-                                    saya berikan adalah benar dan saya
-                                    menyetujui syarat dan ketentuan yang ada.
+                                <span className="ml-2 text-sm">
+                                    <strong>Dengan ini saya menyatakan</strong>{" "}
+                                    bahwa data yang saya berikan adalah benar
+                                    dan saya menyetujui syarat dan ketentuan
+                                    yang ada.
                                 </span>
                             </label>
-                            {form.errors.agree_terms && (
+                            {formErrors.agree_terms && (
                                 <p className="text-red-500 text-sm mt-1">
-                                    {form.errors.agree_terms}
+                                    {formErrors.agree_terms}
                                 </p>
                             )}
                         </div>
 
                         <button
                             type="submit"
-                            className="mt-4 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition"
-                            disabled={
-                                images.length !== 4 ||
-                                !form.data.agree_terms ||
-                                form.processing
-                            }
+                            className={`mt-4 px-6 py-3 text-white rounded-lg transition ${
+                                isFormValid
+                                    ? "bg-green-700 hover:bg-green-800"
+                                    : "bg-gray-400 cursor-not-allowed"
+                            }`}
+                            disabled={!isFormValid || form.processing}
                         >
                             {form.processing ? "Mengirim..." : "Kirim"}
                         </button>
+                        {!isFormValid && (
+                            <p className="text-sm text-gray-600 mt-2">
+                                Mohon lengkapi semua data yang diperlukan dan
+                                unggah 4 gambar tanah
+                            </p>
+                        )}
                     </div>
                 </form>
             </div>
