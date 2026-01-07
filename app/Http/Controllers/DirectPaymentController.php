@@ -114,6 +114,13 @@ class DirectPaymentController extends Controller
                 return response()->json(['message' => 'Payment not found'], 404);
             }
 
+            Log::info('Payment status update request received', [
+                'payment_id' => $payment->id,
+                'current_status' => $payment->status,
+                'new_status' => $request->status,
+                'payment_type' => $request->payment_type,
+                'transaction_id' => $request->transaction_id
+            ]);
 
             switch ($request->status) {
                 case 'success':
@@ -128,7 +135,10 @@ class DirectPaymentController extends Controller
                     break;
             }
 
-            $payment->payment_type = $request->payment_type;
+            if ($request->payment_type) {
+                $payment->payment_type = $request->payment_type;
+            }
+
             $payment->save();
 
 
@@ -138,8 +148,19 @@ class DirectPaymentController extends Controller
 
                 if ($landListing && $package) {
                     $landListing->is_paid = true;
-                    $landListing->expiry_date = now()->addDays($package->duration);
+                    
+                    $landListing->expiry_date = now()->addMonths($package->duration);
+                    
                     $landListing->save();
+                    
+                    Log::info('Land listing status updated after direct payment', [
+                        'land_listing_id' => $landListing->id,
+                        'is_paid' => true,
+                        'package_id' => $package->id,
+                        'package_name' => $package->name,
+                        'duration_months' => $package->duration,
+                        'expiry_date' => $landListing->expiry_date
+                    ]);
                 }
             }
 
@@ -160,3 +181,4 @@ class DirectPaymentController extends Controller
         }
     }
 }
+

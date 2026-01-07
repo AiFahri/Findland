@@ -23,12 +23,12 @@ class PaymentController extends Controller
         Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = config('midtrans.is_sanitized');
         Config::$is3ds = config('midtrans.is_3ds');
-
-        // Disable SSL verification for development
-        Config::$curlOptions = [
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0
-        ];
+        
+        // Hapus ini untuk production
+        // Config::$curlOptions = [
+        //     CURLOPT_SSL_VERIFYHOST => 0,
+        //     CURLOPT_SSL_VERIFYPEER => 0
+        // ];
     }
 
     /**
@@ -215,17 +215,45 @@ class PaymentController extends Controller
      */
     public function webhook(Request $request)
     {
+        $input = $request->all();
+        $signatureKey = config('midtrans.server_key');
+        
+        $headerSignature = $request->header('X-Signature-Key');
+        
+        $orderId = $input['order_id'];
+        $statusCode = $input['status_code'];
+        $grossAmount = $input['gross_amount'];
+        $serverKey = $signatureKey;
+        
+        $signature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        
+        if ($signature !== $headerSignature) {
+            Log::warning('Invalid Midtrans webhook signature', [
+                'received' => $headerSignature,
+                'calculated' => $signature
+            ]);
+            return response()->json(['status' => 'error', 'message' => 'Invalid signature'], 403);
+        }
+        
+        // Proses webhook
         try {
-            $notification = new Notification();
-
+            $requestData = $request->all();
             Log::info('Midtrans Notification Received', [
-                'payload' => $request->all()
+                'payload' => $requestData
             ]);
 
+            $notification = new Notification();
             $transactionStatus = $notification->transaction_status;
             $paymentType = $notification->payment_type;
             $orderId = $notification->order_id;
             $fraudStatus = $notification->fraud_status;
+
+            Log::info('Midtrans Notification Parsed', [
+                'transaction_status' => $transactionStatus,
+                'payment_type' => $paymentType,
+                'order_id' => $orderId,
+                'fraud_status' => $fraudStatus
+            ]);
 
             $payment = Payment::find($orderId);
 
@@ -249,30 +277,43 @@ class PaymentController extends Controller
                 } else if ($fraudStatus == 'accept') {
                     $payment->status = 'paid';
                     $payment->paid_at = now();
+                    $payment->payment_type = $paymentType;
                     $this->updateLandListingStatus($payment);
                 }
             } else if ($transactionStatus == 'settlement') {
                 // Pembayaran sukses
                 $payment->status = 'paid';
                 $payment->paid_at = now();
+                $payment->payment_type = $paymentType;
                 $this->updateLandListingStatus($payment);
             } else if ($transactionStatus == 'pending') {
                 // Pembayaran pending
                 $payment->status = 'pending';
+                $payment->payment_type = $paymentType;
             } else if ($transactionStatus == 'deny') {
                 // Pembayaran ditolak
                 $payment->status = 'denied';
+                $payment->payment_type = $paymentType;
             } else if ($transactionStatus == 'expire') {
                 // Pembayaran expired
                 $payment->status = 'expired';
                 $payment->expired_at = now();
+                $payment->payment_type = $paymentType;
             } else if ($transactionStatus == 'cancel') {
                 // Pembayaran dibatalkan
                 $payment->status = 'failed';
+                $payment->payment_type = $paymentType;
             }
 
-            $payment->payment_type = $paymentType;
+            // Simpan perubahan
             $payment->save();
+
+            Log::info('Payment status updated via webhook', [
+                'payment_id' => $payment->id,
+                'new_status' => $payment->status,
+                'payment_type' => $payment->payment_type,
+                'paid_at' => $payment->paid_at
+            ]);
 
             Log::info('Payment status updated successfully', [
                 'payment_id' => $payment->id,
@@ -300,12 +341,15 @@ class PaymentController extends Controller
 
             if ($landListing && $package) {
                 $landListing->is_paid = true;
-                $landListing->expiry_date = now()->addDays($package->duration);
+                $landListing->expiry_date = now()->addMonths($package->duration);
                 $landListing->save();
 
                 Log::info('Land listing status updated after payment', [
                     'land_listing_id' => $landListing->id,
                     'is_paid' => true,
+                    'package_id' => $package->id,
+                    'package_name' => $package->name,
+                    'duration_months' => $package->duration,
                     'expiry_date' => $landListing->expiry_date
                 ]);
             } else {
@@ -441,3 +485,7 @@ class PaymentController extends Controller
         ]);
     }
 }
+
+
+
+

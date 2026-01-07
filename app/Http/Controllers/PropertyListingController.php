@@ -31,6 +31,8 @@ class PropertyListingController extends Controller
         : null;
 
         Log::info('Properties count: ' . $properties->count());
+        Log::info('Selected Property ID: ' . $selectedPropertyId);
+        Log::info('Selected Property: ', $selectedProperty ? [$selectedProperty->toArray()] : ['null']);
         Log::info('Properties data: ', $properties->items());
 
         return Inertia::render('Layanan/Properti', [
