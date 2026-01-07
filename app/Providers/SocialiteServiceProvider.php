@@ -25,20 +25,24 @@ class SocialiteServiceProvider extends ServiceProvider
 
         $socialite->extend('google', function () use ($socialite) {
             $googleConfig = config('services.google');
-
-            // Create a Guzzle client with SSL verification disabled
-            $client = new Client([
-                'verify' => false, // Disable SSL verification for development
-            ]);
-
+            
+            $clientOptions = [];
+            if (app()->environment('local', 'development') && config('guzzle.verify') === false) {
+                $clientOptions['verify'] = false;
+            }
+            
+            $client = !empty($clientOptions) ? new Client($clientOptions) : null;
+            
             $provider = $socialite->buildProvider(
                 \Laravel\Socialite\Two\GoogleProvider::class,
                 $googleConfig
             );
-
-            $provider->setHttpClient($client);
-
+            if ($client) {
+                $provider->setHttpClient($client);
+            }
+            
             return $provider;
         });
     }
 }
+

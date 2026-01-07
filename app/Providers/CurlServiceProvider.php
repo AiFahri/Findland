@@ -18,9 +18,8 @@ class CurlServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Disable SSL verification for development
-        if (config('guzzle.verify') === false) {
-            // Extend Socialite to use custom Guzzle client
+        if (app()->environment('local', 'development') && config('guzzle.verify') === false) {
+            // Extend Socialite hanya jika dalam mode development
             \Laravel\Socialite\Facades\Socialite::extend('google', function ($app) {
                 $config = $app['config']['services.google'];
                 return new \Laravel\Socialite\Two\GoogleProvider(
