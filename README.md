@@ -123,7 +123,7 @@
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/your-username/findland.git
+git clone https://github.com/AiFahri/Findland.git
 cd findland
 ```
 
@@ -315,17 +315,6 @@ API endpoints yang tersedia:
 3. Commit perubahan (`git commit -m 'Add amazing feature'`)
 4. Push ke branch (`git push origin feature/amazing-feature`)
 5. Buat Pull Request
-
-## 📞 Support
-
-Jika mengalami masalah atau membutuhkan bantuan:
-- **Email**: support@findland.com
-- **Documentation**: [docs.findland.com](https://docs.findland.com)
-- **Issues**: [GitHub Issues](https://github.com/your-username/findland/issues)
-
-## 📄 License
-
-Project ini menggunakan lisensi [MIT License](LICENSE).
 
 ---
 
