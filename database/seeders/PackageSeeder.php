@@ -11,7 +11,7 @@ class PackageSeeder extends Seeder
     {
         Package::insert([
             ['name' => 'Starter', 'price' => 334000, 'duration' => 1],
-            ['name' => 'Enterprise', 'price' => 1000000, 'duration' => 3],
+            ['name' => 'Enterprise', 'price' => 10, 'duration' => 3],
             ['name' => 'Lite', 'price' => 1900000, 'duration' => 6],
             ['name' => 'Pro', 'price' => 3800000, 'duration' => 12],
         ]);

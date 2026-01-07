@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PackageSeeder::class,
             AdminUserSeeder::class,
+            PropertyListingSeeder::class,
         ]);
 
         if (app()->environment('local', 'development')) {
@@ -34,4 +35,5 @@ class DatabaseSeeder extends Seeder
         }
     }
 }
+
 
