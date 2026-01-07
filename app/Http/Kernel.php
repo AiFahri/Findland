@@ -20,6 +20,8 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\LogRequests::class,
+        \App\Http\Middleware\AddSecurityHeaders::class,
     ];
 
     /**
@@ -37,6 +39,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\SecurityHeaders::class,
         ],
 
         'api' => [
@@ -67,5 +70,8 @@ class Kernel extends HttpKernel
         'verified'         => \App\Http\Middleware\CustomEnsureEmailIsVerified::class,
         'auth:admin'       => \App\Http\Middleware\AdminAuthenticate::class,
         'cors'             => \App\Http\Middleware\CorsMiddleware::class,
+        'log.requests'     => \App\Http\Middleware\LogRequests::class,
     ];
 }
+
+

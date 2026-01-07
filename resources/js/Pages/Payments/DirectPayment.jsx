@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Head } from "@inertiajs/react";
 import MainLayout from "@/Layouts/MainLayout";
 import { formatRupiah } from "@/Utils/formatter";
@@ -14,12 +14,22 @@ export default function DirectPayment({
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [snapInitialized, setSnapInitialized] = useState(false);
+    const midtransRetryCount = useRef(0);
+    const maxRetries = 3;
+
+    const retryMidtransLoad = () => {
+        if (midtransRetryCount.current >= maxRetries) {
+            setError(
+                "Gagal memuat Midtrans setelah beberapa percobaan. Silakan refresh halaman ini."
+            );
+            return;
+        }
+
+        midtransRetryCount.current += 1;
+        loadMidtransScript();
+    };
 
     useEffect(() => {
-        console.log("DirectPayment component mounted");
-        console.log("Payment Data:", paymentData);
-        console.log("Client Key:", clientKey);
-
         const loadMidtransScript = () => {
             setIsLoading(true);
             const script = document.createElement("script");
@@ -28,15 +38,14 @@ export default function DirectPayment({
                 : "https://app.sandbox.midtrans.com/snap/snap.js";
             script.setAttribute("data-client-key", clientKey);
             script.async = true;
+            script.defer = true; 
 
             script.onload = () => {
-                console.log("Midtrans Snap.js loaded successfully");
                 setIsLoading(false);
                 setSnapInitialized(true);
             };
 
             script.onerror = () => {
-                console.error("Failed to load Midtrans Snap.js");
                 setIsLoading(false);
                 setError("Gagal memuat Midtrans. Silakan refresh halaman ini.");
             };
@@ -62,8 +71,6 @@ export default function DirectPayment({
         setIsLoading(true);
 
         try {
-            console.log("Opening Midtrans Snap popup");
-
             const transactionDetails = {
                 transaction_details: {
                     order_id: paymentData.order_id,
@@ -88,43 +95,26 @@ export default function DirectPayment({
                     unfinish: paymentData.unfinish_url,
                     error: paymentData.error_url,
                 },
-            };
-
-            const transactionData = {
-                transaction_details: {
-                    order_id: paymentData.order_id,
-                    gross_amount: paymentData.gross_amount,
+                credit_card: {
+                    secure: true,
                 },
-                customer_details: {
-                    first_name: paymentData.first_name,
-                    last_name: paymentData.last_name,
-                    email: paymentData.email,
-                    phone: paymentData.phone,
-                },
-                item_details: [
-                    {
-                        id: paymentData.item_id,
-                        price: paymentData.item_price,
-                        quantity: 1,
-                        name: paymentData.item_name,
-                    },
-                ],
             };
 
             axios
                 .post("/api/payments/get-snap-token", {
                     order_id: paymentData.order_id,
-                    transaction_data: transactionData,
+                    transaction_data: transactionDetails,
                 })
                 .then((response) => {
                     const snapToken = response.data.snap_token;
-                    console.log("Received Snap Token:", snapToken);
-
                     if (!snapToken) {
                         throw new Error("Failed to get Snap Token from server");
                     }
 
-                    window.snap.pay(snapToken, {
+                    // Tambahkan opsi tambahan untuk production
+                    const snapOptions = {
+                        skipOrderSummary: false,
+                        showOrderId: true,
                         onSuccess: function (result) {
                             console.log("Payment success:", result);
                             updatePaymentStatus("success", result);
@@ -146,17 +136,19 @@ export default function DirectPayment({
                             );
                             setIsLoading(false);
                         },
-                    });
+                    };
+
+                    window.snap.pay(snapToken, snapOptions);
                 })
                 .catch((error) => {
-                    console.error("Error getting Snap Token:", error);
+                    console.error("Error getting snap token:", error);
                     setError(
                         "Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi."
                     );
                     setIsLoading(false);
                 });
         } catch (error) {
-            console.error("Error opening Snap payment popup:", error);
+            console.error("Error in payment process:", error);
             setError(
                 "Terjadi kesalahan saat membuka popup pembayaran. Silakan coba lagi."
             );
@@ -172,7 +164,6 @@ export default function DirectPayment({
                 transaction_id: result?.transaction_id || null,
                 payment_type: result?.payment_type || null,
             });
-            console.log("Payment status updated successfully");
         } catch (error) {
             console.error("Error updating payment status:", error);
         }
@@ -206,6 +197,21 @@ export default function DirectPayment({
                                         customer service kami jika masalah
                                         berlanjut.
                                     </p>
+                                </div>
+                            )}
+
+                            {error && (
+                                <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-6">
+                                    <h2 className="text-lg font-medium text-red-800 mb-2">
+                                        Error
+                                    </h2>
+                                    <p className="text-red-700 mb-2">{error}</p>
+                                    <button
+                                        onClick={retryMidtransLoad}
+                                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                                    >
+                                        Coba Lagi
+                                    </button>
                                 </div>
                             )}
 
@@ -306,3 +312,4 @@ export default function DirectPayment({
         </MainLayout>
     );
 }
+

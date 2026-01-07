@@ -16,7 +16,7 @@ class LandListingController extends Controller
 {
     private $packages = [
         1 => ['name' => 'Starter', 'price' => 334000, 'duration' => '1 Bulan'],
-        2 => ['name' => 'Enterprise', 'price' => 1000000, 'duration' => '3 Bulan'],
+        2 => ['name' => 'Enterprise', 'price' => 10, 'duration' => '3 Bulan'],
         3 => ['name' => 'Lite', 'price' => 1900000, 'duration' => '6 Bulan'],
         4 => ['name' => 'Pro', 'price' => 3800000, 'duration' => '12 Bulan']
     ];
@@ -49,26 +49,44 @@ class LandListingController extends Controller
                 'birth_place_date' => 'required|string|max:255',
                 'address' => 'required|string',
                 'ktp_id' => 'required|string|unique:land_listings,ktp_id',
-                // 'religion' => 'required|string|max:100',
-                // 'monthly_income' => 'required|numeric|min:0',
                 'phone_number' => 'required|string|max:15',
                 'npwp' => 'required|string|max:20',
                 'ktp_scan' => 'required|image|mimes:jpeg,png,jpg|max:2048',
                 'land_photos' => 'required|array|min:4|max:4',
                 'land_photos.*' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'status' => 'required|in:Dijual,Disewa',
+                'maps_link' => 'required|url|max:255',
                 'agree_terms' => 'required|accepted'
             ]);
 
             DB::beginTransaction();
 
-            $ktpPath = $request->file('ktp_scan')->store('ktp_scans', 'public');
+            $ktpFileName = 'ktp_' . Auth::id() . '_' . time() . '.' . $request->file('ktp_scan')->getClientOriginalExtension();
+            $ktpPath = $request->file('ktp_scan')->storeAs('ktp_scans', $ktpFileName, 'public');
             Log::info('KTP Scan Path', ['path' => $ktpPath]);
 
             $photoPaths = [];
-            foreach ($request->file('land_photos') as $photo) {
-                $path = $photo->store('land_photos', 'public');
+            $cleanTitle = preg_replace('/[^a-zA-Z0-9]/', '', strtoupper($validatedData['full_name']));
+
+            foreach ($request->file('land_photos') as $index => $photo) {
+                $imageNumber = $index + 1;
+                    $extension = $photo->getClientOriginalExtension() ?: 'jpg'; // Default to jpg if no extension
+
+                if (!in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif'])) {
+                    $extension = 'jpg';
+                }
+
+                $fileName = "property_temp_" . Auth::id() . "_{$cleanTitle}_{$imageNumber}.{$extension}";
+
+                $path = $photo->storeAs('land_photos', $fileName, 'public');
                 $photoPaths[] = $path;
+
+                Log::info('Land Photo Path', [
+                    'index' => $index,
+                    'path' => $path,
+                    'extension' => $extension,
+                    'original_name' => $photo->getClientOriginalName()
+                ]);
             }
 
             // Create Land Listing
@@ -78,15 +96,14 @@ class LandListingController extends Controller
                 'birth_place_date' => $validatedData['birth_place_date'],
                 'address' => $validatedData['address'],
                 'ktp_id' => $validatedData['ktp_id'],
-                // 'religion' => $validatedData['religion'],
-                // 'monthly_income' => $validatedData['monthly_income'],
                 'phone_number' => $validatedData['phone_number'],
                 'npwp' => $validatedData['npwp'],
                 'ktp_scan' => $ktpPath,
                 'package_id' => $request->input('package_id'),
                 'land_photos' => $photoPaths,
                 'admin_status' => 'pending',
-                'status' => $validatedData['status']
+                'status' => $validatedData['status'],
+                'maps_link' => $validatedData['maps_link'] ?? null
             ]);
             Log::info('Land Listing Created', ['id' => $landListing->id]);
 
@@ -126,3 +143,5 @@ class LandListingController extends Controller
         }
     }
 }
+
+

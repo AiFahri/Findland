@@ -8,9 +8,12 @@ import starEmpty from "../../../assets/starEmpty.svg";
 import Modal from "@/Components/Modal";
 import { useAuth } from "@/hooks/useAuth";
 import { useReviewForm } from "@/hooks/useReviewForm";
+import { useState, useEffect } from "react";
 
-const Review = ({ reviews }) => {
+const Review = ({ reviews, canReview = false, reviewMessage = "" }) => {
     const { isAuthenticated } = useAuth();
+    const [showPaymentRequiredModal, setShowPaymentRequiredModal] =
+        useState(false);
     const {
         form,
         rating,
@@ -26,9 +29,17 @@ const Review = ({ reviews }) => {
         maxChars,
     } = useReviewForm();
 
+
     const submitReview = (e) => {
         e.preventDefault();
-        setShowConfirmModal(true);
+
+        if (!canReview) {
+          
+            setShowPaymentRequiredModal(true);
+        } else {
+        
+            setShowConfirmModal(true);
+        }
     };
 
     return (
@@ -38,7 +49,7 @@ const Review = ({ reviews }) => {
                 onClose={() => !isSubmitting && setShowConfirmModal(false)}
                 title="Konfirmasi Pengiriman"
             >
-                <div className="p-6 max-w-sm mx-auto text-center">
+                <div className="p-6 max-w-sm mx-auto text-center ">
                     <p className="text-gray-600 mb-6">
                         Apakah Anda yakin ingin mengirim ulasan ini?
                     </p>
@@ -68,7 +79,28 @@ const Review = ({ reviews }) => {
                 </div>
             </Modal>
 
-            <div className="mt-8 bg-white border rounded-3xl p-10 md:p-12 max-w-7xl mx-auto relative">
+            <Modal
+                show={showPaymentRequiredModal}
+                onClose={() => setShowPaymentRequiredModal(false)}
+                title="Perhatian"
+            >
+                <div className="p-6 max-w-sm mx-auto text-center">
+                    <p className="text-gray-600 mb-6">
+                        {reviewMessage ||
+                            "Anda harus melakukan pembayaran untuk bisa menggunakan fitur ini!"}
+                    </p>
+                    <div className="flex justify-center">
+                        <button
+                            onClick={() => setShowPaymentRequiredModal(false)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        >
+                            Saya Mengerti
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            <div className="mt-8 bg-[#f7f8f8] border rounded-3xl p-10 md:p-12 max-w-8xl mx-auto relative">
                 {successMessage && (
                     <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
                         {successMessage}
@@ -81,13 +113,13 @@ const Review = ({ reviews }) => {
                 )}
                 <div className="grid md:grid-cols-2 gap-12">
                     <div>
-                        <h2 className="text-4xl md:text-6xl font-bold text-lowokwaru">
+                        <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold text-lowokwaru">
                             Apa kata <br /> Customer Kami
                         </h2>
                     </div>
 
                     <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-200">
-                        <h3 className="text-lg font-semibold text-pandanwangi flex items-center gap-2">
+                        <h3 className="text-lg lg:text-3xl font-semibold text-pandanwangi flex items-center gap-2">
                             <span className="text-2xl">
                                 <img
                                     src={doubleQuote}

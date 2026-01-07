@@ -11,16 +11,16 @@ class PropertyListingFactory extends Factory
         $statuses = ['Dijual', 'Disewa'];
         $images = [
             [
-                '/storage/property/tanah1.jpg',
-                '/storage/property/tanah2.jpg',
-                '/storage/property/tanah3.jpg',
-                '/storage/property/tanah4.jpg'
+                '/storage/property/property_14_DISEWAKANTANAHLUASUNTUKRUKO_1.jpg',
+                '/storage/property/property_15_TANAHKAVLINGPERUMAHANVIEWGUNUNG_1.jpg',
+                '/storage/property/property_13_TANAHSTRATEGISDEKATKAMPUSUB_1.jpg',
+                '/storage/property/property_15_TANAHKAVLINGPERUMAHANVIEWGUNUNG_1.jpg'
             ],
             [
-                '/storage/property/tanah2.jpg',
-                '/storage/property/tanah3.jpg',
-                '/storage/property/tanah4.jpg',
-                '/storage/property/tanah1.jpg'
+                '/storage/property/property_14_DISEWAKANTANAHLUASUNTUKRUKO_1.jpg',
+                '/storage/property/property_15_TANAHKAVLINGPERUMAHANVIEWGUNUNG_1.jpg',
+                '/storage/property/property_13_TANAHSTRATEGISDEKATKAMPUSUB_1.jpg',
+                '/storage/property/property_15_TANAHKAVLINGPERUMAHANVIEWGUNUNG_1.jpg'
             ]
         ];
 

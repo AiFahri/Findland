@@ -26,6 +26,8 @@ class LandListingFactory extends Factory
                 'lands/dummy4.jpg',
             ]),
             'admin_status'     => 'pending',
+            'maps_link'        => $this->faker->url(), 
         ];
     }
 }
+

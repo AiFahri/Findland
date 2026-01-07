@@ -24,10 +24,13 @@ const PropertyList = ({ totalListings }) => {
                                         Full Name
                                     </th>
                                     <th className="py-3 px-6 text-left">
-                                        KTP ID
+                                        Status Pembayaran
                                     </th>
                                     <th className="py-3 px-6 text-left">
-                                        Address
+                                        Duration
+                                    </th>
+                                    <th className="py-3 px-6 text-left">
+                                        Submitted At
                                     </th>
                                     <th className="py-3 px-6 text-left">
                                         Status
@@ -49,14 +52,47 @@ const PropertyList = ({ totalListings }) => {
                                                 {listing.full_name}
                                             </td>
                                             <td className="py-3 px-6 text-left">
-                                                {listing.ktp_id}
+                                                <p
+                                                    className={
+                                                        listing.is_paid
+                                                            ? "text-green-600 font-semibold"
+                                                            : "text-red-600 font-semibold"
+                                                    }
+                                                >
+                                                    {listing.is_paid
+                                                        ? "Sudah Dibayar"
+                                                        : "Belum Dibayar"}
+                                                </p>{" "}
                                             </td>
                                             <td className="py-3 px-6 text-left">
-                                                {listing.address}
+                                                {listing.package_id
+                                                    ? `${
+                                                          listing.package_id * 3
+                                                      } months`
+                                                    : "N/A"}{" "}
+                                            </td>
+                                            <td>
+                                                <p>
+                                                    {new Date(
+                                                        listing.created_at
+                                                    ).toLocaleString()}
+                                                </p>
                                             </td>
                                             <td className="py-3 px-6 text-left">
-                                                {listing.admin_status || "N/A"}
+                                                <p
+                                                    className={
+                                                        listing.admin_status ==
+                                                        "approved"
+                                                            ? "text-green-600 font-semibold"
+                                                            : "text-yellow-500 font-semibold"
+                                                    }
+                                                >
+                                                    {" "}
+                                                    {listing.admin_status ||
+                                                        "N/A"}
+                                                </p>
                                             </td>
+
                                             <td className="py-3 px-6 text-center">
                                                 <Link
                                                     href={route(

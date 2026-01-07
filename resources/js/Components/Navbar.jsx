@@ -227,7 +227,7 @@ const Navbar = ({ auth }) => {
                     {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
                 </button>
 
-                <div className="hidden [@media(min-width:1024px)]:flex [@media(min-width:1024px)]:items-center [@media(min-width:1024px)]:gap-6 [@media(min-width:1024px)]:flex-1">
+                <div className="hidden justify-center [@media(min-width:1024px)]:flex [@media(min-width:1024px)]:items-center [@media(min-width:1024px)]:gap-6 [@media(min-width:1024px)]:flex-1">
                     <nav className="flex items-center gap-2">
                         {navLinks.map((nav, index) => (
                             <NavItem
@@ -239,7 +239,7 @@ const Navbar = ({ auth }) => {
                             />
                         ))}
                     </nav>
-                    <div className="flex-1 mx-4">
+                    <div className="flex-1 mx-4 lg:max-w-80">
                         <SearchBar />
                     </div>
                     <div>

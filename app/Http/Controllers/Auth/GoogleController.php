@@ -22,9 +22,13 @@ class GoogleController extends Controller
     {
         Log::info('Google redirect started');
         try {
-            // Use stateless mode to avoid session issues
             return Socialite::driver('google')
                 ->stateless()
+                ->with([
+                    'prompt' => 'consent',
+                    'access_type' => 'offline',
+                    'include_granted_scopes' => 'true'
+                ])
                 ->redirect();
         } catch (\Exception $e) {
             Log::error('Google redirect error: ' . $e->getMessage());
@@ -201,3 +205,4 @@ class GoogleController extends Controller
         }
     }
 }
+

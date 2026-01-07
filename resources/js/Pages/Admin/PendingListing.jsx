@@ -20,10 +20,13 @@ const PendingListings = ({ pendingListings }) => {
                                         Full Name
                                     </th>
                                     <th className="py-3 px-6 text-left">
-                                        KTP ID
+                                        Status Pembayaran
                                     </th>
                                     <th className="py-3 px-6 text-left">
-                                        Address
+                                        Duration
+                                    </th>
+                                    <th className="py-3 px-6 text-left">
+                                        Submitted At
                                     </th>
                                     <th className="py-3 px-6 text-center">
                                         Actions
@@ -40,10 +43,31 @@ const PendingListings = ({ pendingListings }) => {
                                             {listing.full_name}
                                         </td>
                                         <td className="py-3 px-6 text-left">
-                                            {listing.ktp_id}
+                                            <p
+                                                className={
+                                                    listing.is_paid
+                                                        ? "text-green-600 font-semibold"
+                                                        : "text-red-600 font-semibold"
+                                                }
+                                            >
+                                                {listing.is_paid
+                                                    ? "Sudah Dibayar"
+                                                    : "Belum Dibayar"}
+                                            </p>{" "}
                                         </td>
                                         <td className="py-3 px-6 text-left">
-                                            {listing.address}
+                                            {listing.package_id
+                                                ? `${
+                                                      listing.package_id * 3
+                                                  } months`
+                                                : "N/A"}{" "}
+                                        </td>
+                                        <td className="py-3 px-6 text-left">
+                                            <p>
+                                                {new Date(
+                                                    listing.created_at
+                                                ).toLocaleString()}
+                                            </p>
                                         </td>
                                         <td className="py-3 px-6 text-center">
                                             <Link

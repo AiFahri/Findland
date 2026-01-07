@@ -6,7 +6,10 @@ const Card = ({
     status,
     price,
     description,
+    desc_detail,
     place,
+    land_area,
+    certificate_type,
     className = "",
     ...props
 }) => {
@@ -19,7 +22,26 @@ const Card = ({
                 <img
                     src={image}
                     alt={description}
-                    className="w-fit h-full sm:h-full md:h-full object-cover rounded-t-2xl"
+                    className="w-full max-h-24 sm:max-h-20 md:max-h-52 object-cover rounded-t-2xl"
+                    onLoad={() => {}}
+                    onError={(e) => {
+                        const currentSrc = e.target.src;
+                        if (currentSrc.endsWith(".jpg")) {
+                            const pngPath = currentSrc.replace(".jpg", ".png");
+
+                            e.target.src = pngPath;
+                            return;
+                        }
+
+                        if (currentSrc.endsWith(".png")) {
+                            const jpgPath = currentSrc.replace(".png", ".jpg");
+
+                            e.target.src = jpgPath;
+                            return;
+                        }
+                        e.target.src = "/assets/default-property.jpg";
+                        e.target.onerror = null; // Prevent infinite loop
+                    }}
                 />
             </div>
             <div className="p-3 sm:p-4 flex flex-col h-auto rounded-b-2xl">
@@ -37,14 +59,30 @@ const Card = ({
                         {price}
                     </p>
                 </div>
-                <div className="h-10 sm:h-12 overflow-hidden">
+                <div className="h-5 sm:h-5 overflow-hidden">
                     <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                         {description}
                     </p>
                 </div>
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-auto pt-0">
-                    {place}
-                </p>
+                <div className="flex flex-col mt-auto pt-1">
+                    {(land_area || certificate_type) && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                            {land_area && (
+                                <span className="text-[8px] sm:text-[10px] bg-gray-100 text-gray-700 px-1 py-0.5 rounded">
+                                    {land_area} m²
+                                </span>
+                            )}
+                            {certificate_type && (
+                                <span className="text-[8px] sm:text-[10px] bg-gray-100 text-gray-700 px-1 py-0.5 rounded">
+                                    {certificate_type}
+                                </span>
+                            )}
+                        </div>
+                    )}
+                    <p className="text-[10px] sm:text-xs text-gray-500">
+                        {place}
+                    </p>
+                </div>
             </div>
         </div>
     );
