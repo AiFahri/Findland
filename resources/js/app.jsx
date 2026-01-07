@@ -7,6 +7,11 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
 import MainLayout from "@/Layouts/MainLayout";
 import { PropertyProvider } from "@/contexts/PropertyContext";
+import ReactGA from "react-ga4";
+
+if (import.meta.env.VITE_GA_MEASUREMENT_ID) {
+    ReactGA.initialize(import.meta.env.VITE_GA_MEASUREMENT_ID);
+}
 
 const appName = import.meta.env.VITE_APP_NAME;
 
@@ -33,3 +38,4 @@ createInertiaApp({
         color: "#4B5563",
     },
 });
+
