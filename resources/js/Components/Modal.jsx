@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useRef, useEffect, Fragment} from 'react';
+import { useRef, useEffect, Fragment } from "react";
 
 export default function Modal({
     children,
@@ -12,15 +12,14 @@ export default function Modal({
     useEffect(() => {
         function handleClickOutside(event) {
             if (modalRef.current && !modalRef.current.contains(event.target)) {
-                console.log("Click outside modal detected");
                 onClose();
             }
         }
 
         if (show) {
-            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener("mousedown", handleClickOutside);
             return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
+                document.removeEventListener("mousedown", handleClickOutside);
             };
         }
     }, [show, onClose]);
@@ -41,8 +40,8 @@ export default function Modal({
                     </Transition.Child>
 
                     <div className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:mx-auto sm:w-3/4 sm:align-middle">
-                        <div 
-                            ref={modalRef} 
+                        <div
+                            ref={modalRef}
                             className="bg-white flex flex-col"
                             onClick={(e) => e.stopPropagation()}
                         >
@@ -74,11 +73,3 @@ export default function Modal({
         </Transition>
     );
 }
-
-
-
-
-
-
-
-

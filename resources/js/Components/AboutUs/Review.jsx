@@ -8,9 +8,12 @@ import starEmpty from "../../../assets/starEmpty.svg";
 import Modal from "@/Components/Modal";
 import { useAuth } from "@/hooks/useAuth";
 import { useReviewForm } from "@/hooks/useReviewForm";
+import { useState, useEffect } from "react";
 
-const Review = ({ reviews }) => {
+const Review = ({ reviews, canReview = false, reviewMessage = "" }) => {
     const { isAuthenticated } = useAuth();
+    const [showPaymentRequiredModal, setShowPaymentRequiredModal] =
+        useState(false);
     const {
         form,
         rating,
@@ -26,9 +29,17 @@ const Review = ({ reviews }) => {
         maxChars,
     } = useReviewForm();
 
+
     const submitReview = (e) => {
         e.preventDefault();
-        setShowConfirmModal(true);
+
+        if (!canReview) {
+          
+            setShowPaymentRequiredModal(true);
+        } else {
+        
+            setShowConfirmModal(true);
+        }
     };
 
     return (
@@ -63,6 +74,27 @@ const Review = ({ reviews }) => {
                             ) : (
                                 "Kirim"
                             )}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal
+                show={showPaymentRequiredModal}
+                onClose={() => setShowPaymentRequiredModal(false)}
+                title="Perhatian"
+            >
+                <div className="p-6 max-w-sm mx-auto text-center">
+                    <p className="text-gray-600 mb-6">
+                        {reviewMessage ||
+                            "Anda harus melakukan pembayaran untuk bisa menggunakan fitur ini!"}
+                    </p>
+                    <div className="flex justify-center">
+                        <button
+                            onClick={() => setShowPaymentRequiredModal(false)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        >
+                            Saya Mengerti
                         </button>
                     </div>
                 </div>

@@ -18,7 +18,7 @@ const FaqAccordion = ({ id, active, toggle, quest, answer }) => {
                 onClick={toggleAccordion}
                 className="flex items-center justify-between cursor-pointer"
             >
-                <h1 className="text-lowokwaru font-montserrat font-bold leading-normal text-lg px-4">
+                <h1 className="text-lowokwaru font-montserrat font-bold leading-normal text-lg lg:text-xl px-4">
                     {quest}
                 </h1>
                 <motion.span
@@ -48,7 +48,7 @@ const FaqAccordion = ({ id, active, toggle, quest, answer }) => {
                         className="scroll-hidden"
                     >
                         <motion.p
-                            className="font-montserrat-light text-base leading-normal text-lowokwaru px-4 scroll-auto"
+                            className="font-montserrat-light text-base leading-normal text-lowokwaru lg:text-lg px-4 scroll-auto"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}

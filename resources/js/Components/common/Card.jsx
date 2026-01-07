@@ -22,15 +22,25 @@ const Card = ({
                 <img
                     src={image}
                     alt={description}
-                    className="w-fit h-full sm:h-full md:h-full object-cover rounded-t-2xl"
+                    className="w-full max-h-24 sm:max-h-20 md:max-h-52 object-cover rounded-t-2xl"
+                    onLoad={() => {}}
                     onError={(e) => {
+                        const currentSrc = e.target.src;
+                        if (currentSrc.endsWith(".jpg")) {
+                            const pngPath = currentSrc.replace(".jpg", ".png");
+
+                            e.target.src = pngPath;
+                            return;
+                        }
+
+                        if (currentSrc.endsWith(".png")) {
+                            const jpgPath = currentSrc.replace(".png", ".jpg");
+
+                            e.target.src = jpgPath;
+                            return;
+                        }
                         e.target.src = "/assets/default-property.jpg";
-                        e.target.onerror = null; 
-                        console.debug("Card image load error:", {
-                            originalSrc: image,
-                            fallbackSrc: "/assets/default-property.jpg",
-                            title: title,
-                        });
+                        e.target.onerror = null; // Prevent infinite loop
                     }}
                 />
             </div>
@@ -49,7 +59,7 @@ const Card = ({
                         {price}
                     </p>
                 </div>
-                <div className="h-10 sm:h-12 overflow-hidden">
+                <div className="h-5 sm:h-5 overflow-hidden">
                     <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                         {description}
                     </p>
