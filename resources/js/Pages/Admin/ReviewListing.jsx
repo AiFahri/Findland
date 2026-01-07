@@ -11,6 +11,7 @@ const ReviewListing = ({ listing }) => {
     const [submittedImages, setSubmittedImages] = useState(
         listing.land_photos || []
     );
+
     const [showModal, setShowModal] = useState(false);
     const [modalContent, setModalContent] = useState({
         title: "",
@@ -27,7 +28,7 @@ const ReviewListing = ({ listing }) => {
             price: listing.monthly_income || 0,
             place: listing.address,
             desc_detail: "",
-            maps: "",
+            maps: listing.maps_link || "",
             wa: listing.phone_number || "",
             land_area: null,
             certificate_type: null,
@@ -92,8 +93,6 @@ const ReviewListing = ({ listing }) => {
             extension
         );
 
-        console.log("Uploading image with filename:", newFileName);
-
         const formData = new FormData();
         formData.append("image", file);
         formData.append("filename", newFileName); // Tambahkan nama file yang diinginkan
@@ -110,7 +109,6 @@ const ReviewListing = ({ listing }) => {
             );
 
             const imagePath = response.data.path.replace("/storage/", "");
-            console.log("Image uploaded successfully:", imagePath);
 
             if (type === "main") {
                 setData("property_details", {
@@ -141,6 +139,8 @@ const ReviewListing = ({ listing }) => {
         formData.append("admin_notes", data.admin_notes || "");
 
         if (actionStatus === "approved") {
+            const adminWhatsApp = "6287889601959";
+
             const propertyDetails = {
                 title:
                     data.property_details.title ||
@@ -153,14 +153,21 @@ const ReviewListing = ({ listing }) => {
                     data.property_details.desc_detail || listing.address,
                 maps:
                     data.property_details.maps ||
+                    listing.maps_link ||
                     `https://maps.google.com/?q=${listing.address}`,
-                wa: data.property_details.wa || listing.phone_number,
-                image: data.property_details.image || listing.land_photos[0],
+                wa: adminWhatsApp,
+                image:
+                    selectedMainImage ||
+                    data.property_details.image ||
+                    listing.land_photos[0],
                 images:
+                    submittedImages.filter(
+                        (img) => img !== selectedMainImage
+                    ) ||
                     data.property_details.images ||
                     listing.land_photos.slice(1),
                 status:
-                    data.property_details.status || listing.status || "Dijual", // Gunakan status dari form atau dari land_listing
+                    data.property_details.status || listing.status || "Dijual",
                 featured: data.property_details.featured || false,
                 land_area: data.property_details.land_area || null,
                 certificate_type:
@@ -174,16 +181,9 @@ const ReviewListing = ({ listing }) => {
                 JSON.stringify(propertyDetails)
             );
         }
-
-        console.log("Form Data contents:");
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ": " + pair[1]);
-        }
-
         axios
             .post(route("admin.properties.approve", listing.id), formData)
             .then((response) => {
-                console.log("Success response:", response);
                 setModalContent({
                     title: "Success",
                     message: `Property listing has been successfully ${actionStatus}`,
@@ -309,6 +309,23 @@ const ReviewListing = ({ listing }) => {
                                 {listing.is_paid
                                     ? "Sudah Dibayar"
                                     : "Belum Dibayar"}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Google Maps Link:</p>
+                            <p>
+                                {listing.maps_link ? (
+                                    <a
+                                        href={listing.maps_link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {listing.maps_link}
+                                    </a>
+                                ) : (
+                                    "Tidak ada"
+                                )}
                             </p>
                         </div>
                         <div>
@@ -508,16 +525,29 @@ const ReviewListing = ({ listing }) => {
                                                 data.property_details
                                                     .desc_detail
                                             }
-                                            onChange={(e) =>
-                                                setData("property_details", {
-                                                    ...data.property_details,
-                                                    desc_detail: e.target.value,
-                                                })
-                                            }
+                                            onChange={(e) => {
+                                                const input = e.target.value;
+                                                if (input.length <= 550) {
+                                                    setData(
+                                                        "property_details",
+                                                        {
+                                                            ...data.property_details,
+                                                            desc_detail: input,
+                                                        }
+                                                    );
+                                                }
+                                            }}
                                             placeholder="Deskripsi lengkap properti"
                                             className="w-full p-2 border rounded"
                                             rows="4"
                                         />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            {
+                                                data.property_details
+                                                    .desc_detail.length
+                                            }
+                                            /550 karakter
+                                        </p>
                                     </div>
                                     <div>
                                         <label className="block mb-2 text-yellow-800">
@@ -570,7 +600,10 @@ const ReviewListing = ({ listing }) => {
                                         </label>
                                         <input
                                             type="text"
-                                            value={data.property_details.maps}
+                                            value={
+                                                data.property_details.maps ||
+                                                listing.maps_link
+                                            }
                                             onChange={(e) =>
                                                 setData("property_details", {
                                                     ...data.property_details,
@@ -578,24 +611,10 @@ const ReviewListing = ({ listing }) => {
                                                 })
                                             }
                                             className="w-full p-2 border rounded"
+                                            placeholder="https://maps.google.com/?q=..."
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block mb-2 text-yellow-800">
-                                            WhatsApp Link*
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={data.property_details.wa}
-                                            onChange={(e) =>
-                                                setData("property_details", {
-                                                    ...data.property_details,
-                                                    wa: e.target.value,
-                                                })
-                                            }
-                                            className="w-full p-2 border rounded"
-                                        />
-                                    </div>
+                                    
                                     <div className="flex items-center">
                                         <input
                                             type="checkbox"

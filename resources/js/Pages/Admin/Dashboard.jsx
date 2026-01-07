@@ -9,7 +9,7 @@ const AdminDashboard = ({ auth, propertyStats, recentListings }) => {
                 <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <Link
-                        href="/admin/properties/total"
+                        href="/finadminofc/properties/total"
                         className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition"
                     >
                         <h2 className="text-xl font-semibold mb-4">
@@ -45,7 +45,7 @@ const AdminDashboard = ({ auth, propertyStats, recentListings }) => {
                             Recent Pending Listings
                         </h2>
                         <Link
-                            href="/admin/properties/pending"
+                            href="/finadminofc/properties/pending"
                             className="text-blue-600 hover:underline"
                         >
                             View All
@@ -77,7 +77,7 @@ const AdminDashboard = ({ auth, propertyStats, recentListings }) => {
                                         </p>
                                     </div>
                                     <Link
-                                        href={`/admin/properties/${listing.id}/review`}
+                                        href={`/finadminofc/properties/${listing.id}/review`}
                                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                                     >
                                         Review
