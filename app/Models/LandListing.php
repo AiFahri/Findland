@@ -13,7 +13,7 @@ class LandListing extends Model
         'user_id', 'full_name', 'birth_place_date', 'address',
         'ktp_id', 'phone_number',
         'npwp', 'ktp_scan', 'package_id', 'land_photos', 'admin_status',
-        'is_paid', 'expiry_date', 'status'
+        'is_paid', 'expiry_date', 'status', 'maps_link'
     ];
 
     protected $casts = [
@@ -59,3 +59,4 @@ class LandListing extends Model
         return $this->hasOne(Payment::class)->latest();
     }
 }
+
