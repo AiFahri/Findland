@@ -25,17 +25,22 @@ class MidtransHelper
 
             $auth = base64_encode($serverKey . ':');
 
-            $response = Http::withOptions([
-                'verify' => false,
-            ])->withHeaders([
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'Authorization' => 'Basic ' . $auth
-            ])->post($baseUrl, $params);
+            $httpOptions = [];
+            if (!$isProduction) {
+                $httpOptions['verify'] = false;
+            }
+
+            $response = Http::withOptions($httpOptions)
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Basic ' . $auth
+                ])->post($baseUrl, $params);
 
             Log::info('Midtrans API Response', [
                 'status' => $response->status(),
-                'body' => $response->json()
+                'body' => $response->json(),
+                'is_production' => $isProduction
             ]);
 
             if ($response->successful()) {
@@ -50,12 +55,11 @@ class MidtransHelper
 
             return null;
         } catch (\Exception $e) {
-            Log::error('Midtrans Helper Error', [
-                'message' => $e->getMessage(),
+            Log::error('Exception in getSnapToken: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
-
             return null;
         }
     }
 }
+
