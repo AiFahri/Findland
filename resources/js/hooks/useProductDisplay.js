@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { resolveImageUrl } from "@/Utils/imageHelper";
 
 export const useProductDisplay = (data, initialSelectedProperty) => {
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -14,20 +15,18 @@ export const useProductDisplay = (data, initialSelectedProperty) => {
             return [];
         }
         // Jika product.image ada, gunakan sebagai gambar pertama
-        const mainImage = product.image ? `/storage/${product.image}` : null;
+        const mainImage = product.image ? resolveImageUrl(product.image) : null;
         // Jika product.images adalah array, gunakan sebagai gambar tambahan
         let additionalImages = [];
         if (Array.isArray(product.images)) {
-            additionalImages = product.images.map((img) => `/storage/${img}`);
+            additionalImages = product.images.map(resolveImageUrl);
         } else if (typeof product.images === "string") {
             try {
                 const parsedImages = JSON.parse(
                     product.images.replace(/\\/g, "").replace(/^"|"$/g, "")
                 );
                 if (Array.isArray(parsedImages)) {
-                    additionalImages = parsedImages.map(
-                        (img) => `/storage/${img}`
-                    );
+                    additionalImages = parsedImages.map(resolveImageUrl);
                 }
             } catch (error) {
                 console.error("Error parsing product.images:", error);
@@ -67,12 +66,7 @@ export const useProductDisplay = (data, initialSelectedProperty) => {
 
         // Jika product.image ada, gunakan sebagai thumbnail
         if (product.image) {
-            // Jika path sudah lengkap dengan /storage/, gunakan langsung
-            if (product.image.startsWith("/storage/")) {
-                return product.image;
-            }
-            // Jika tidak, tambahkan /storage/ di depan
-            return `/storage/${product.image}`;
+            return resolveImageUrl(product.image);
         }
 
         // Jika tidak ada image, coba gunakan pendekatan lama

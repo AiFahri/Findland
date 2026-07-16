@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { formatRupiah, truncateText } from "@/Utils/formatter";
+import { resolveImageUrl } from "@/Utils/imageHelper";
 
 export const useProperty = () => {
     const [properties, setProperties] = useState([]);
@@ -8,9 +9,12 @@ export const useProperty = () => {
 
     // Fungsi untuk mendapatkan path gambar yang benar dari property
     const getPropertyImagePath = useCallback((property) => {
+        if (property?.image) {
+            return resolveImageUrl(property.image);
+        }
+
         if (!property || !property.land_listing_id) {
-            // Jika tidak ada land_listing_id, gunakan image langsung
-            return property?.image || "/assets/default-property.jpg";
+            return "/assets/default-property.jpg";
         }
 
         // Buat nama file berdasarkan konvensi penamaan

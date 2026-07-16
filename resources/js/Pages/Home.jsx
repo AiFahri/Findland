@@ -15,6 +15,7 @@ import findlandputih from "../../../public/assets/findland_white.svg";
 import CardSkeleton from "@/Components/common/CardSkeleton";
 import PropertySectionSkeleton from "@/Components/common/PropertySectionSkeleton";
 import HeroBannerSkeleton from "@/Components/common/HeroBannerSkeleton";
+import { resolveImageUrl } from "@/Utils/imageHelper";
 
 const PropertySection = ({ properties, isSlider = false }) => {
     const { formatPropertiesList } = useProperty();
@@ -103,7 +104,7 @@ const Home = ({ latestProperties, featuredProperties }) => {
             latestProperties.forEach((property) => {
                 if (property.image) {
                     propertyImages.push(
-                        preloadImage(`/storage/${property.image}`)
+                        preloadImage(resolveImageUrl(property.image))
                     );
                 }
             });
@@ -113,7 +114,7 @@ const Home = ({ latestProperties, featuredProperties }) => {
             featuredProperties.forEach((property) => {
                 if (property.image) {
                     propertyImages.push(
-                        preloadImage(`/storage/${property.image}`)
+                        preloadImage(resolveImageUrl(property.image))
                     );
                 }
             });

@@ -13,14 +13,16 @@ class LandListing extends Model
         'user_id', 'full_name', 'birth_place_date', 'address',
         'ktp_id', 'phone_number',
         'npwp', 'ktp_scan', 'package_id', 'land_photos', 'admin_status',
-        'is_paid', 'expiry_date', 'status', 'maps_link'
+        'admin_notes', 'approved_by', 'approved_at', 'is_paid', 'expiry_date',
+        'status', 'maps_link',
     ];
 
     protected $casts = [
         'land_photos' => 'array',
         'package_id' => 'integer',
         'is_paid' => 'boolean',
-        'expiry_date' => 'datetime'
+        'approved_at' => 'datetime',
+        'expiry_date' => 'datetime',
     ];
 
     public function setLandPhotosAttribute($value)
@@ -59,4 +61,3 @@ class LandListing extends Model
         return $this->hasOne(Payment::class)->latest();
     }
 }
-

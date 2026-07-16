@@ -6,6 +6,7 @@ import SearchBar from "@/Components/SearchBar";
 import PropertiHeaderSkeleton from "@/Components/common/PropertiHeaderSkeleton";
 import ProductSkeleton from "@/Components/common/ProductSkeleton";
 import SelectedProductSkeleton from "@/Components/common/SelectedProductSkeleton";
+import { resolveImageUrl } from "@/Utils/imageHelper";
 
 const Properti = ({ properties, status, selectedProperty }) => {
     const { data, links, current_page, last_page } = properties;
@@ -75,7 +76,7 @@ const Properti = ({ properties, status, selectedProperty }) => {
             data.forEach((property) => {
                 if (property.image) {
                     propertyImages.push(
-                        preloadImage(`/storage/${property.image}`)
+                        preloadImage(resolveImageUrl(property.image))
                     );
                 }
             });
@@ -302,5 +303,4 @@ const Properti = ({ properties, status, selectedProperty }) => {
 Properti.layout = (page) => <MainLayout children={page} />;
 
 export default Properti;
-
 

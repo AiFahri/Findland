@@ -3,7 +3,10 @@ import { Head, useForm } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Modal from "@/Components/Modal";
 import axios from "axios";
-import { generatePropertyImageName } from "@/Utils/imageHelper";
+import {
+    generatePropertyImageName,
+    resolveImageUrl,
+} from "@/Utils/imageHelper";
 
 const ReviewListing = ({ listing }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -365,7 +368,7 @@ const ReviewListing = ({ listing }) => {
                         {submittedImages.map((image, index) => (
                             <div key={index} className="relative">
                                 <img
-                                    src={`/storage/${image}`}
+                                    src={resolveImageUrl(image)}
                                     alt={`Submitted image ${index + 1}`}
                                     className={`w-full h-48 object-cover rounded cursor-pointer
                                         ${

@@ -1,3 +1,22 @@
+export const resolveImageUrl = (
+    path,
+    fallback = "/assets/default-property.jpg"
+) => {
+    if (!path || typeof path !== "string") {
+        return fallback;
+    }
+
+    if (/^(https?:)?\/\//i.test(path) || /^(data|blob):/i.test(path)) {
+        return path;
+    }
+
+    if (path.startsWith("/")) {
+        return path;
+    }
+
+    return `/storage/${path.replace(/^public\//, "")}`;
+};
+
 /**
  * Fungsi untuk menghasilkan nama file gambar properti yang konsisten
  * Format: property_[landListingId]_[title]_[number].[extension]
