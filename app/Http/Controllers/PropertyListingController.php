@@ -60,7 +60,7 @@ class PropertyListingController extends Controller
     {
         $property = PropertyListing::findOrFail($id);
 
-        return Inertia::render('Layanan/PropertyDetail', [
+        return Inertia::render('Property/Show', [
             'property' => $property,
         ]);
     }
