@@ -12,6 +12,7 @@ class PropertyListingController extends Controller
     {
         $status = $request->input('status', $request->route('status'));
         $selectedPropertyId = $request->input('selectedPropertyId');
+        $search = trim((string) $request->input('search', ''));
 
         $query = PropertyListing::query();
 
@@ -21,7 +22,15 @@ class PropertyListingController extends Controller
             $query->where('status', 'Disewa');
         }
 
-        $properties = $query->paginate(10);
+        $query->when($search !== '', function ($query) use ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('place', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        });
+
+        $properties = $query->paginate(10)->withQueryString();
 
         // If a specific property is selected, pass it to the view
         $selectedProperty = $selectedPropertyId
@@ -31,6 +40,7 @@ class PropertyListingController extends Controller
         return Inertia::render('Layanan/Properti', [
             'properties' => $properties,
             'status' => $status,
+            'search' => $search,
             'selectedProperty' => $selectedProperty,
         ]);
     }
