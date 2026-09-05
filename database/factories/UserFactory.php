@@ -3,10 +3,13 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserFactory extends Factory
 {
+    protected static ?string $password;
+
     public function definition(): array
     {
         return [
@@ -15,7 +18,7 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'address' => $this->faker->address(),
             'email_verified_at' => now(),
-            'password' => '$2y$12$lpl6S6hwxOm42vQQtEz7femxnj6IyDmok2OS21yzHL.yFC.BTQqsK', // password
+            'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'profile_picture' => null,
         ];
@@ -28,4 +31,3 @@ class UserFactory extends Factory
         ]);
     }
 }
-
