@@ -116,10 +116,17 @@ class ProfileController extends Controller
 
     public function destroy(Request $request)
     {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
         $user = Auth::user();
 
-        // Hapus akun pengguna
+        Auth::logout();
         $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/')->with('success', 'Akun berhasil dihapus.');
     }
