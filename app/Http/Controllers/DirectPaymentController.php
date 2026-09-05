@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\LandListing;
-use App\Models\Payment;
 use App\Models\Package;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +13,6 @@ use Inertia\Inertia;
 
 class DirectPaymentController extends Controller
 {
-
     public function showPaymentPage(LandListing $landListing)
     {
         try {
@@ -21,28 +20,27 @@ class DirectPaymentController extends Controller
             if (Auth::id() !== $landListing->user_id) {
                 Log::warning('Unauthorized payment attempt', [
                     'user_id' => Auth::id(),
-                    'land_listing_id' => $landListing->id
+                    'land_listing_id' => $landListing->id,
                 ]);
+
                 return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk melakukan pembayaran ini.');
             }
 
-
             $package = Package::findOrFail($landListing->package_id);
-            if (!$package) {
+            if (! $package) {
                 Log::error('Package not found', [
                     'package_id' => $landListing->package_id,
-                    'land_listing_id' => $landListing->id
+                    'land_listing_id' => $landListing->id,
                 ]);
+
                 return redirect()->back()->with('error', 'Paket tidak ditemukan.');
             }
-
 
             $payment = Payment::where('land_listing_id', $landListing->id)
                 ->where('status', 'unpaid')
                 ->first();
 
-
-            if (!$payment) {
+            if (! $payment) {
                 $payment = Payment::create([
                     'id' => (string) Str::uuid(),
                     'user_id' => Auth::id(),
@@ -52,7 +50,6 @@ class DirectPaymentController extends Controller
                     'status' => 'unpaid',
                 ]);
             }
-
 
             $paymentData = [
                 'order_id' => $payment->id,
@@ -65,7 +62,6 @@ class DirectPaymentController extends Controller
                 'item_name' => $package->name,
                 'item_price' => (int) $package->price,
                 'client_key' => config('midtrans.client_key'),
-                'server_key' => config('midtrans.server_key'),
                 'is_production' => config('midtrans.is_production'),
                 'finish_url' => route('payments.finish', ['order_id' => $payment->id]),
                 'unfinish_url' => route('payments.unfinish', ['order_id' => $payment->id]),
@@ -76,7 +72,7 @@ class DirectPaymentController extends Controller
                 'payment_id' => $payment->id,
                 'land_listing_id' => $landListing->id,
                 'package_id' => $package->id,
-                'amount' => $payment->amount
+                'amount' => $payment->amount,
             ]);
 
             // Render halaman pembayaran langsung
@@ -85,18 +81,18 @@ class DirectPaymentController extends Controller
                 'package' => $package,
                 'landListing' => $landListing,
                 'paymentData' => $paymentData,
-                'clientKey' => config('midtrans.client_key')
+                'clientKey' => config('midtrans.client_key'),
             ]);
         } catch (\Exception $e) {
-            Log::error('Error showing direct payment page: ' . $e->getMessage(), [
+            Log::error('Error showing direct payment page: '.$e->getMessage(), [
                 'land_listing_id' => $landListing->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.');
         }
     }
-
 
     public function updatePaymentStatus(Request $request)
     {
@@ -110,7 +106,7 @@ class DirectPaymentController extends Controller
 
             $payment = Payment::find($request->order_id);
 
-            if (!$payment) {
+            if (! $payment) {
                 return response()->json(['message' => 'Payment not found'], 404);
             }
 
@@ -119,7 +115,7 @@ class DirectPaymentController extends Controller
                 'current_status' => $payment->status,
                 'new_status' => $request->status,
                 'payment_type' => $request->payment_type,
-                'transaction_id' => $request->transaction_id
+                'transaction_id' => $request->transaction_id,
             ]);
 
             switch ($request->status) {
@@ -141,25 +137,24 @@ class DirectPaymentController extends Controller
 
             $payment->save();
 
-
             if ($request->status === 'success') {
                 $landListing = $payment->landListing;
                 $package = $payment->package;
 
                 if ($landListing && $package) {
                     $landListing->is_paid = true;
-                    
+
                     $landListing->expiry_date = now()->addMonths($package->duration);
-                    
+
                     $landListing->save();
-                    
+
                     Log::info('Land listing status updated after direct payment', [
                         'land_listing_id' => $landListing->id,
                         'is_paid' => true,
                         'package_id' => $package->id,
                         'package_name' => $package->name,
                         'duration_months' => $package->duration,
-                        'expiry_date' => $landListing->expiry_date
+                        'expiry_date' => $landListing->expiry_date,
                     ]);
                 }
             }
@@ -168,17 +163,17 @@ class DirectPaymentController extends Controller
                 'payment_id' => $payment->id,
                 'status' => $request->status,
                 'transaction_id' => $request->transaction_id,
-                'payment_type' => $request->payment_type
+                'payment_type' => $request->payment_type,
             ]);
 
             return response()->json(['message' => 'Payment status updated successfully']);
         } catch (\Exception $e) {
-            Log::error('Error updating payment status: ' . $e->getMessage(), [
+            Log::error('Error updating payment status: '.$e->getMessage(), [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return response()->json(['message' => 'Error updating payment status'], 500);
         }
     }
 }
-

@@ -12,7 +12,7 @@ class ProfileController extends Controller
     public function edit()
     {
         return Inertia::render('Profile/Profile', [
-            'auth' => ['user' => Auth::user()]
+            'auth' => ['user' => Auth::user()],
         ]);
     }
 
@@ -23,7 +23,7 @@ class ProfileController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'address' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:6|confirmed',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -46,13 +46,13 @@ class ProfileController extends Controller
 
                 // Hapus foto lama jika ada
                 if ($user->profile_picture) {
-                    \Illuminate\Support\Facades\Storage::delete('public/' . $user->profile_picture);
+                    \Illuminate\Support\Facades\Storage::delete('public/'.$user->profile_picture);
                 }
 
                 try {
                     // Simpan foto baru dengan nama file yang lebih pendek
                     $extension = $request->file('profile_picture')->getClientOriginalExtension();
-                    $filename = 'user_' . $user->id . '_' . time() . '.' . $extension;
+                    $filename = 'user_'.$user->id.'_'.time().'.'.$extension;
                     $path = $request->file('profile_picture')->storeAs('profile_pictures', $filename, 'public');
 
                     // Verifikasi file berhasil disimpan
@@ -63,7 +63,7 @@ class ProfileController extends Controller
                         \Illuminate\Support\Facades\Log::error('Failed to save profile picture', ['path' => $path]);
                     }
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Error saving profile picture: ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error('Error saving profile picture: '.$e->getMessage());
                 }
             }
 
@@ -72,11 +72,17 @@ class ProfileController extends Controller
             $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->address = $request->address;
+
+            if ($user->isDirty('email')) {
+                $user->email_verified_at = null;
+            }
+
             $user->save();
 
             return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error updating profile: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Error updating profile: '.$e->getMessage());
+
             return redirect()->back()->with('error', 'Gagal memperbarui profil. Silakan coba lagi.');
         }
     }
@@ -92,7 +98,7 @@ class ProfileController extends Controller
         try {
             // Hapus foto lama jika ada
             if ($user->profile_picture) {
-                Storage::delete('public/' . $user->profile_picture);
+                Storage::delete('public/'.$user->profile_picture);
             }
 
             // Simpan foto baru
@@ -102,17 +108,25 @@ class ProfileController extends Controller
             return redirect()->back()->with('success', 'Foto profil berhasil diperbarui!');
         } catch (\Exception $e) {
             // Log error
-            \Illuminate\Support\Facades\Log::error('Error updating profile picture: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Error updating profile picture: '.$e->getMessage());
+
             return redirect()->back()->with('error', 'Gagal mengupload foto profil. Silakan coba lagi.');
         }
     }
 
     public function destroy(Request $request)
     {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
         $user = Auth::user();
 
-        // Hapus akun pengguna
+        Auth::logout();
         $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/')->with('success', 'Akun berhasil dihapus.');
     }

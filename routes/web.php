@@ -11,11 +11,8 @@ use App\Http\Controllers\PropertyListingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SnapTokenController;
 use App\Http\Middleware\AdminAuthenticate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', [PropertyListingController::class, 'getHomeProperties'])->name('home');
 Route::get('/tentangkami', [ReviewController::class, 'index'])->name('AboutsUs');
@@ -113,52 +110,11 @@ Route::post('/api/payments/update-status', [DirectPaymentController::class, 'upd
 // API untuk mendapatkan Snap Token dari Midtrans
 Route::post('/api/payments/get-snap-token', [SnapTokenController::class, 'getSnapToken'])->name('api.payments.get-snap-token');
 
-// Debug route untuk memeriksa keberadaan file gambar
-Route::get('/debug/check-image', function () {
-    $path    = request()->input('path');
-    $results = [];
-    $exists              = Storage::disk('public')->exists($path);
-    $results['original'] = [
-        'path'      => $path,
-        'exists'    => $exists,
-        'full_path' => Storage::disk('public')->path($path),
-    ];
-
-    $pathWithoutExt = preg_replace('/\.[^.]+$/', '', $path);
-    $extensions     = ['jpg', 'jpeg', 'png', 'gif'];
-
-    foreach ($extensions as $ext) {
-        $testPath                  = $pathWithoutExt . '.' . $ext;
-        $exists                    = Storage::disk('public')->exists($testPath);
-        $results['alternatives'][] = [
-            'path'      => $testPath,
-            'exists'    => $exists,
-            'full_path' => Storage::disk('public')->path($testPath),
-        ];
-    }
-    Log::info('Image debug check', $results);
-
-    return response()->json($results);
-})->name('debug.check-image');
-
-// Route untuk menampilkan daftar semua file di storage
-Route::get('/debug/list-storage', function () {
-    $directories = [
-        'property'    => Storage::disk('public')->files('property'),
-        'land_photos' => Storage::disk('public')->files('land_photos'),
-        'assets'      => Storage::disk('public')->files(),
-        'root'        => Storage::disk('public')->files('/'),
-    ];
-    Log::info('Storage directory listing', $directories);
-
-    return response()->json($directories);
-})->name('debug.list-storage');
-
 Route::get('/sitemap.xml', function () {
     $properties = \App\Models\LandListing::all();
     $content = view('sitemap', compact('properties'));
+
     return response($content)->header('Content-Type', 'application/xml');
 });
 
-require __DIR__ . '/auth.php';
-
+require __DIR__.'/auth.php';

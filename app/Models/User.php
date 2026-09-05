@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -34,7 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var list<string>
      */
-    protected $_hidden = [
+    protected $hidden = [
         'password',
         'remember_token',
     ];
@@ -48,14 +49,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
     /**
      * Get the user's full name.
-     *
-     * @return string
      */
     public function getNameAttribute(): string
     {
@@ -67,7 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
         try {
             // Jika user memiliki profile_picture dan file ada di storage
             if ($this->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->profile_picture)) {
-                return asset('storage/' . $this->profile_picture);
+                return asset('storage/'.$this->profile_picture);
             }
 
             // Jika user memiliki avatar dari Google
@@ -76,11 +75,12 @@ class User extends Authenticatable implements MustVerifyEmail
             }
 
             // Default avatar dari ui-avatars dengan nama user
-            return 'https://ui-avatars.com/api/?name=' . urlencode($this->first_name . ' ' . $this->last_name) . '&background=153832&color=fff';
+            return 'https://ui-avatars.com/api/?name='.urlencode($this->first_name.' '.$this->last_name).'&background=153832&color=fff';
         } catch (\Exception $e) {
             // Jika terjadi error, gunakan ui-avatars sebagai fallback
-            \Illuminate\Support\Facades\Log::error('Error getting profile picture URL: ' . $e->getMessage());
-            return 'https://ui-avatars.com/api/?name=' . urlencode($this->first_name . ' ' . $this->last_name) . '&background=153832&color=fff';
+            \Illuminate\Support\Facades\Log::error('Error getting profile picture URL: '.$e->getMessage());
+
+            return 'https://ui-avatars.com/api/?name='.urlencode($this->first_name.' '.$this->last_name).'&background=153832&color=fff';
         }
     }
 
