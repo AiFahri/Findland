@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\PropertyListing;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PropertyListingController extends Controller
@@ -13,8 +12,6 @@ class PropertyListingController extends Controller
     {
         $status = $request->input('status', $request->route('status'));
         $selectedPropertyId = $request->input('selectedPropertyId');
-
-        Log::info('Incoming status: '.$status);
 
         $query = PropertyListing::query();
 
@@ -30,11 +27,6 @@ class PropertyListingController extends Controller
         $selectedProperty = $selectedPropertyId
         ? PropertyListing::find($selectedPropertyId)
         : null;
-
-        Log::info('Properties count: '.$properties->count());
-        Log::info('Selected Property ID: '.$selectedPropertyId);
-        Log::info('Selected Property: ', $selectedProperty ? [$selectedProperty->toArray()] : ['null']);
-        Log::info('Properties data: ', $properties->items());
 
         return Inertia::render('Layanan/Properti', [
             'properties' => $properties,
